@@ -41,7 +41,7 @@
 // #include "g4csv.hh"
 
 class G4Run;
-
+class SteppingAction;
 /// Run action class
 ///
 /// In EndOfRunAction(), it calculates the dose in the selected volume
@@ -63,11 +63,10 @@ class RunAction : public G4UserRunAction
     void getFilenameToRunAction(G4String fileName){fFileName = fileName;}
 
 
-
   private:
     G4Accumulable<G4double> fEdep;
     G4Accumulable<G4double> fEdep2;
-
+    
     G4String fFileName;
 
     G4String asciiFileName;

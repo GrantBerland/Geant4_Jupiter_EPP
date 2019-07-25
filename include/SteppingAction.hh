@@ -34,6 +34,8 @@
 #include "G4UserSteppingAction.hh"
 #include "globals.hh"
 #include "G4ThreeVector.hh"
+#include <vector>
+
 
 class EventAction;
 
@@ -52,11 +54,10 @@ class SteppingAction : public G4UserSteppingAction
     // method from the base class
     virtual void UserSteppingAction(const G4Step*);
     void LogParticle(G4ThreeVector, G4double, G4String);
-    void OutputPhotonCount() {G4cout<<fPhotonCounter<<G4endl;};
 
   private:
     EventAction*  fEventAction;
-    static G4int fPhotonCounter;
+    static std::vector<G4double> particleArray;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

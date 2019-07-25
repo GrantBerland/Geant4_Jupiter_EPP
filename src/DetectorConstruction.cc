@@ -207,6 +207,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 {980.000000,8.375400e-24,1.114060e-26,2.542000e-18,9.151000e+02},
 {990.000000,6.396700e-24,8.188500e-27,2.430000e-18,9.151000e+02},
 {1000.000000,4.888000e-24,6.020800e-27,2.325000e-18,9.151000e+02}};
+  
   const int tableSize = 101;
  
   // Material definitions
@@ -243,7 +244,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 	        (msisAtmosTable[i][2] * 1000.) * 
 	        msisAtmosTable[i][4];
      
-     layerMaterial = new G4Material("AirLayer",  // name
+     layerMaterial = new G4Material("AirLayer"+std::to_string(i),  // name
 		     msisAtmosTable[i][3]*g/cm3, // density
 		     2,                          // number of components
 		     kStateGas,                  // state
@@ -251,10 +252,10 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 		     pressure*pascal); 	 // pressure
     
      layerMaterial->AddElement(N, // material, mass fraction
-		     msisAtmosTable[i][1]/msisAtmosTable[i][3]);
+		     2);//msisAtmosTable[i][1]/msisAtmosTable[i][3]);
 
      layerMaterial->AddElement(O, // material, mass fraction
-		     msisAtmosTable[i][2]/msisAtmosTable[i][3]); 
+		     2);//msisAtmosTable[i][2]/msisAtmosTable[i][3]); 
      
      logicLayer = new G4LogicalVolume(atmosphereLayer,
 		                      layerMaterial,

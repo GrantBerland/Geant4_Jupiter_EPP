@@ -44,12 +44,13 @@
 
 namespace { G4Mutex myParticleLog = G4MUTEX_INITIALIZER; }
 
-G4int SteppingAction::fPhotonCounter = 0;
+std::vector<G4double> SteppingAction::particleArray = {};
 
 SteppingAction::SteppingAction(EventAction* eventAction)
 : G4UserSteppingAction(),
   fEventAction(eventAction)
 {
+
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -63,13 +64,19 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
 {
 
   G4Track* track = step->GetTrack();
-
-  if(track->GetCreatorProcess() != NULL)
-  {
-    const G4String& processName = track->GetCreatorProcess()->GetProcessName();
-
-   if(processName == "eBrem") {fPhotonCounter += 1; 
-    OutputPhotonCount();}
+  
+  G4String particleName = 
+	  track->GetDynamicParticle()->GetDefinition()->GetParticleName();
+   
+  if(particleName == "gamma") 
+  { 
+    G4double energy = track->GetKineticEnergy();
+    if(energy > 50.*keV)
+    { 
+      particleArray.push_back(energy); 
+      std::cout << particleArray.size() << std::endl;
+    }
+   
   }
 
 }
