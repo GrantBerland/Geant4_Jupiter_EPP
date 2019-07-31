@@ -38,7 +38,7 @@
 
 
 class EventAction;
-
+class RunAction;
 class G4LogicalVolume;
 
 /// Stepping action class
@@ -47,7 +47,7 @@ class G4LogicalVolume;
 class SteppingAction : public G4UserSteppingAction
 {
   public:
-    SteppingAction(EventAction* eventAction);
+    SteppingAction(EventAction* eventAction, RunAction* RuAct);
 
     virtual ~SteppingAction();
 
@@ -57,7 +57,7 @@ class SteppingAction : public G4UserSteppingAction
 
   private:
     EventAction*  fEventAction;
-    static std::vector<G4double> particleArray;
+    RunAction*    fRunAction;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

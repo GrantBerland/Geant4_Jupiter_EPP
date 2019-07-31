@@ -43,11 +43,13 @@
 #include "G4SystemOfUnits.hh"
 // #include "HistoManager.hh"
 
+#include <fstream>
 
 RunAction::RunAction()
 : G4UserRunAction(),
   fEdep(0.),
-  fEdep2(0.)
+  fEdep2(0.),
+  fPhotonEnergyVector(0.)
 {}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -59,12 +61,20 @@ RunAction::~RunAction()
 
 void RunAction::BeginOfRunAction(const G4Run*)
 {
-
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 void RunAction::EndOfRunAction(const G4Run*)
 {
+  std::cout << fPhotonEnergyVector.size() << std::endl;	
+  
+  // Write photon energies to file (C++11)
+  if(fPhotonEnergyVector.size() > 0)
+  {
+    std::ofstream outputFile("photonEnergies.txt");
+    for (const auto &e : fPhotonEnergyVector) outputFile << e/keV << "\n";
+  }
+
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

@@ -36,6 +36,7 @@
 #include "G4Track.hh"
 #include "G4Event.hh"
 #include "G4RunManager.hh"
+#include "RunAction.hh"
 #include "G4LogicalVolume.hh"
 #include "G4SystemOfUnits.hh"
 #include "G4AutoLock.hh"
@@ -44,11 +45,11 @@
 
 namespace { G4Mutex myParticleLog = G4MUTEX_INITIALIZER; }
 
-std::vector<G4double> SteppingAction::particleArray = {};
 
-SteppingAction::SteppingAction(EventAction* eventAction)
+SteppingAction::SteppingAction(EventAction* eventAction, RunAction* RuAct)
 : G4UserSteppingAction(),
-  fEventAction(eventAction)
+  fEventAction(eventAction),
+  fRunAction(RuAct)
 {
 
 }
@@ -71,10 +72,10 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
   if(particleName == "gamma") 
   { 
     G4double energy = track->GetKineticEnergy();
-    if(energy > 50.*keV)
+    if(energy > 0.*keV)
     { 
-      particleArray.push_back(energy); 
-      std::cout << particleArray.size() << std::endl;
+      fRunAction->AddPhotonEnergy(energy);
+      std::cout << fRunAction->fPhotonEnergyVector.size() << std::endl;
     }
    
   }

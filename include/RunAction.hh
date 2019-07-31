@@ -34,6 +34,7 @@
 #include "G4UserRunAction.hh"
 #include "G4Accumulable.hh"
 #include "globals.hh"
+#include <vector>
 
 // Choose your fighter:
 // #include "g4root.hh"
@@ -62,7 +63,11 @@ class RunAction : public G4UserRunAction
 
     void getFilenameToRunAction(G4String fileName){fFileName = fileName;}
 
-
+    inline void AddPhotonEnergy(G4double ene);
+  
+  public:
+    std::vector<G4double> fPhotonEnergyVector;
+  
   private:
     G4Accumulable<G4double> fEdep;
     G4Accumulable<G4double> fEdep2;
@@ -73,7 +78,12 @@ class RunAction : public G4UserRunAction
     std::ofstream *asciiFile;
 
     G4String histFileName;
-
 };
+
+
+inline void RunAction::AddPhotonEnergy(G4double ene)
+{
+  fPhotonEnergyVector.push_back(ene);
+}
 
 #endif
