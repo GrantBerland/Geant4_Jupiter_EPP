@@ -46,30 +46,32 @@
 #include <fstream>
 
 RunAction::RunAction()
-: G4UserRunAction(),
-  fEdep(0.),
-  fEdep2(0.),
-  fPhotonEnergyVector(0.)
-{}
+: G4UserRunAction()
+{
+  fPhotonEnergyVector.push_back(0.);
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 RunAction::~RunAction()
-{}
+{
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void RunAction::BeginOfRunAction(const G4Run*)
 {
+  std::cout << "At start of run action: "<< fPhotonEnergyVector.size() << std::endl;	
+
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 void RunAction::EndOfRunAction(const G4Run*)
 {
-  std::cout << fPhotonEnergyVector.size() << std::endl;	
+  std::cout << "At end of run action: " << fPhotonEnergyVector.size() << std::endl;	
   
   // Write photon energies to file (C++11)
-  if(fPhotonEnergyVector.size() > 0)
+  if(!fPhotonEnergyVector.empty())
   {
     std::ofstream outputFile("photonEnergies.txt");
     for (const auto &e : fPhotonEnergyVector) outputFile << e/keV << "\n";
@@ -77,12 +79,5 @@ void RunAction::EndOfRunAction(const G4Run*)
 
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-void RunAction::AddEdep(G4double edep)
-{
-  fEdep  += edep;
-  fEdep2 += edep*edep;
-}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

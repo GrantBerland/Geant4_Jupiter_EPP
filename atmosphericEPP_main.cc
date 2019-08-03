@@ -30,7 +30,6 @@
 // Base simulation building classes
 #include "DetectorConstruction.hh"
 #include "ActionInitialization.hh"
-#include "RunAction.hh"
 
 
 // Multithreading header support
@@ -108,10 +107,6 @@ int main(int argc,char** argv)
   G4double highLimit = 100. * GeV;
   G4ProductionCutsTable::GetProductionCutsTable()->SetEnergyRange(lowLimit, highLimit);
 
-  // runManager->SetUserInitialization(new PhysicsList);
-
-  RunAction* theRunAction = new RunAction;
-
 
   // Initialize visualization
   //
@@ -128,7 +123,6 @@ int main(int argc,char** argv)
     // batch mode
     G4String command = "/control/execute ";
     G4String fileName = argv[1];
-    theRunAction->getFilenameToRunAction(fileName);
     UImanager->ApplyCommand(command+fileName);
   }
   else {
