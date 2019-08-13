@@ -32,10 +32,12 @@
 #define DetectorConstruction_h 1
 
 #include "G4VUserDetectorConstruction.hh"
+#include "G4Cache.hh"
 #include "globals.hh"
 
 class G4VPhysicalVolume;
 class G4LogicalVolume;
+class FieldSetup;
 
 /// Detector construction class to define materials and geometry.
 
@@ -50,6 +52,9 @@ class DetectorConstruction : public G4VUserDetectorConstruction
 
   private:
     G4LogicalVolume* fLogicWorld;
+    const G4int      tableSize;
+    G4LogicalVolume* fLogicLayerArray[101];
+
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

@@ -53,11 +53,11 @@ class SteppingAction : public G4UserSteppingAction
 
     // method from the base class
     virtual void UserSteppingAction(const G4Step*);
-    void LogParticle(G4ThreeVector, G4double, G4String);
 
   private:
     EventAction*  fEventAction;
     RunAction*    fRunAction;
+    G4double      fEnergyThreshold_keV; 
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

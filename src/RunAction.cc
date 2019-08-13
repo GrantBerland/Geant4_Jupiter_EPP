@@ -48,33 +48,52 @@
 RunAction::RunAction()
 : G4UserRunAction()
 {
-  fPhotonEnergyVector.push_back(0.);
+  fPhotonEnergyVector = new std::vector<G4double>();
+  fPhotonAltitudeVector = new std::vector<G4double>();
+  fElectronEnergyVector = new std::vector<G4double>();
+  fElectronAltitudeVector = new std::vector<G4double>();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 RunAction::~RunAction()
 {
+  delete fPhotonEnergyVector;
+  delete fPhotonAltitudeVector;
+  delete fElectronEnergyVector;
+  delete fElectronAltitudeVector;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void RunAction::BeginOfRunAction(const G4Run*)
 {
-  std::cout << "At start of run action: "<< fPhotonEnergyVector.size() << std::endl;	
-
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 void RunAction::EndOfRunAction(const G4Run*)
 {
-  std::cout << "At end of run action: " << fPhotonEnergyVector.size() << std::endl;	
-  
-  // Write photon energies to file (C++11)
-  if(!fPhotonEnergyVector.empty())
+
+  // Write photon energies to file 
+  if(!fPhotonEnergyVector->empty())
   {
-    std::ofstream outputFile("photonEnergies.txt");
-    for (const auto &e : fPhotonEnergyVector) outputFile << e/keV << "\n";
+    // Photon data
+    std::ofstream outputFile1("photon.txt", std::ios_base::app);
+    for (unsigned int i=0;i<fPhotonEnergyVector->size(); i++) 
+    {
+      outputFile1 << (*fPhotonAltitudeVector)[i]/km << ","
+	          << (*fPhotonEnergyVector)[i]/keV << "\n";
+    }
+  }
+  if(!fPhotonEnergyVector->empty())
+  {
+    // Electron data
+    std::ofstream outputFile2("electron.txt", std::ios_base::app);
+    for (unsigned int i=0;i<fPhotonEnergyVector->size(); i++) 
+    {
+      outputFile2 << (*fElectronAltitudeVector)[i]/km << ","
+	          << (*fElectronEnergyVector)[i]/keV << "\n";
+    }
   }
 
 }

@@ -39,19 +39,16 @@
 #include "RunAction.hh"
 #include "G4LogicalVolume.hh"
 #include "G4SystemOfUnits.hh"
-#include "G4AutoLock.hh"
+//#include "G4AutoLock.hh"
 
 #include <fstream>
-
-namespace { G4Mutex myParticleLog = G4MUTEX_INITIALIZER; }
-
 
 SteppingAction::SteppingAction(EventAction* eventAction, RunAction* RuAct)
 : G4UserSteppingAction(),
   fEventAction(eventAction),
-  fRunAction(RuAct)
+  fRunAction(RuAct),
+  fEnergyThreshold_keV(10.)
 {
-
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -68,32 +65,47 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
   
   G4String particleName = 
 	  track->GetDynamicParticle()->GetDefinition()->GetParticleName();
-   
+  
+
   if(particleName == "gamma") 
   { 
-    G4double energy = track->GetKineticEnergy();
-    if(energy > 0.*keV)
-    { 
-      fRunAction->AddPhotonEnergy(energy);
-      std::cout << fRunAction->fPhotonEnergyVector.size() << std::endl;
+    // Gets energy delta of particle over step length
+    const G4double energyDep = step->GetPreStepPoint()->GetKineticEnergy()
+                           - step->GetPostStepPoint()->GetKineticEnergy();
+    if(energyDep > 0.*keV)
+    {
+      // Gets altitude of particle
+      G4ThreeVector position = track->GetPosition();
+      G4double      alt      = position.z();
+      
+      // Adds photon energy to vector owned by RunAction, which is
+      // written to a results file per simulation run
+      fRunAction->AddPhotonEnergy(energyDep);
+      fRunAction->AddPhotonAltitude(alt);
     }
    
   }
-
+  else if(particleName == "e-")
+  {
+    // Gets energy delta of particle over step length
+    const G4double energyDep = step->GetPreStepPoint()->GetKineticEnergy()
+                           - step->GetPostStepPoint()->GetKineticEnergy();
+    if(energyDep > 0.*keV)
+    {
+      // Gets altitude of particle
+      G4ThreeVector position = track->GetPosition();
+      G4double      alt      = position.z();
+      
+      // Adds photon energy to vector owned by RunAction, which is
+      // written to a results file per simulation run
+      fRunAction->AddElectronEnergy(energyDep);
+      fRunAction->AddElectronAltitude(alt);
+    }
+  
+  
+  
+  }
 }
 
-void SteppingAction::LogParticle(G4ThreeVector pos, G4double ene, G4String detectorFileName)
-{
-    
-    G4AutoLock lock(&myParticleLog);
-    
-    std::ofstream hitFile_detector;
-    hitFile_detector.open(detectorFileName, std::ios_base::app);
-    
-    hitFile_detector  << pos.x()/cm << "," << pos.y()/cm << "," 
-	    	      << pos.z()/cm << "," << ene/keV << "\n";
-    
-    hitFile_detector.close();
-}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

@@ -45,15 +45,19 @@
 #include "G4FieldManager.hh"
 #include "G4TransportationManager.hh"
 
-
 #include <fstream>
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 DetectorConstruction::DetectorConstruction()
 : G4VUserDetectorConstruction(),
-fLogicWorld(0)
-{ }
+fLogicWorld(0),
+tableSize(101),
+fLogicLayerArray()
+{
+
+
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -208,8 +212,8 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 {980.000000,1.751620e-19,8.375400e-24,1.114060e-26,2.542000e-18,9.151000e+02,2.238720e-18,3.735600e-31,1.075480e-19,4.020400e-21},
 {990.000000,1.501500e-19,6.396700e-24,8.188500e-27,2.430000e-18,9.151000e+02,2.154240e-18,2.541660e-31,1.065126e-19,3.514400e-21},
 {1000.000000,1.287780e-19,4.888000e-24,6.020800e-27,2.325000e-18,9.151000e+02,2.073060e-18,1.731180e-31,1.054939e-19,3.072800e-21}}; 
-  const int tableSize = 101;
- 
+
+
   // Atmospheric material definitions
   G4Element* O = new G4Element("Oxygen",
 		  	       "O",
@@ -249,7 +253,6 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   G4Material*      layerMaterial;
   G4Material*      diOxygen;
   G4Material*      diNitrogen;
-  G4LogicalVolume* logicLayer;
   G4double         pressure;
   G4double         R_gas_constant_air = 287.;  // J/kg-K air
   G4double         theRest;
@@ -317,14 +320,15 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 		    msisAtmosTable[i][7] + 
 		    msisAtmosTable[i][8] + 
 		    msisAtmosTable[i][9]);
+
      // Below line due to inconsisenties in MSIS total mass density
      // versus the sum of its constituents
      if(theRest < 0) theRest = 0;
 
      layerMaterial->AddMaterial(diNitrogen, theRest);
 
-     logicLayer = new G4LogicalVolume(atmosphereLayer,
-		                      layerMaterial,
+     fLogicLayerArray[i] = new G4LogicalVolume(atmosphereLayer,
+		                   layerMaterial,
 				   "AtmosphereLayer"+std::to_string(i));
 
      
@@ -332,7 +336,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
      
      new G4PVPlacement(0,
 		       G4ThreeVector(0.,0.,layerLocation),
-		       logicLayer,
+		       fLogicLayerArray[i],
 		       "AtmosphereLayer"+std::to_string(i),
 		       fLogicWorld,
 		       false,
@@ -355,18 +359,41 @@ void DetectorConstruction::ConstructSDandFields()
   // Assume B field intensity varies linearly between top and bottom of column
   // B_top = 3.85e-5 T , B_bottom = 5.96e-5 T
 
-  G4MagneticField* magField= new G4UniformMagField( 
-		  G4ThreeVector(0.0, 0.0, 4.905e-5*tesla) ); 
+  // Geomagnetic latitude [radians]
+  G4double lambda = 70 * 180/3.1415926;
 
-  G4FieldManager* globalFieldMgr = 
-  G4TransportationManager::GetTransportationManager()->GetFieldManager();
+  // Radial distance from Earth's surface in Earth radius units
+  G4double r; 
 
-  // Apply global field to whole world logical volume, bool option 
-  // propogates field down to all daughter volumes
-  fLogicWorld->SetFieldManager(globalFieldMgr, true);
+  // Earth dipole moment in Tesla-R_e^3
+  G4double M = 3.094e-5;   
+  
+  G4double B_strength;
+  std::cout << tableSize << std::endl;  
+  for(G4int i=0; i<tableSize; i++)
+  {
+ 
+    r = 1 + 0.001552475 * i;
+    B_strength = M/std::pow(r, 3) * 
+	    std::sqrt(1 + 3 * std::pow(std::sin(lambda),2));
+    
+    G4MagneticField* magField = new G4UniformMagField( 
+		  G4ThreeVector(0.0, 0.0, B_strength*tesla) ); 
+		  //G4ThreeVector(0.0, 0.0, 4.905e-5*tesla) ); 
+    std::cout << "Layer " << i << " , strength: " << B_strength << std::endl;
+    G4FieldManager* globalFieldMgr = 
+   G4TransportationManager::GetTransportationManager()->GetFieldManager();
 
-  globalFieldMgr->SetDetectorField(magField);
-  globalFieldMgr->CreateChordFinder(magField);
+    // Apply global field to whole world logical volume, bool option 
+    // propogates field down to all daughter volumes
+    //fLogicWorld->SetFieldManager(globalFieldMgr, true);
+    
+    fLogicLayerArray[i]->SetFieldManager(globalFieldMgr, true);
+    
+    globalFieldMgr->SetDetectorField(magField);
+    globalFieldMgr->CreateChordFinder(magField);
 
+  }
 }
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
