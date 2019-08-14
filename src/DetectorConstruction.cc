@@ -255,7 +255,9 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   G4Material*      diNitrogen;
   G4double         pressure;
   G4double         R_gas_constant_air = 287.;  // J/kg-K air
-  G4double         theRest;
+  G4double         totalAtmosMass;
+  G4double         zeroThreshold = 1e-21;
+  G4int            nComponents;
   for(int i=0; i<tableSize; i++)
   {
      // Ideal gas law for atmospheric pressure
@@ -264,69 +266,106 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 	        (msisAtmosTable[i][2] * 1000.) * 
 	        msisAtmosTable[i][4];
     
-     diOxygen      = new G4Material("Dioxgyen-Layer"+std::to_string(i),
-		                    msisAtmosTable[i][3]*g/cm3,
-				    1,
-				    kStateGas,
-				    msisAtmosTable[i][4]*kelvin,
-				    pressure*pascal);
-     diOxygen->AddElement(O, 2);
      
-     diNitrogen    = new G4Material("Dinitrogen-Layer"+std::to_string(i),
+
+
+     nComponents    = 0;
+     totalAtmosMass = 0;
+     if(msisAtmosTable[i][1] > zeroThreshold){ 
+	     nComponents++;
+      	     totalAtmosMass += msisAtmosTable[i][1];}
+     if(msisAtmosTable[i][2] > zeroThreshold){ 
+	     nComponents++;
+      	     totalAtmosMass += msisAtmosTable[i][2];
+             diNitrogen = new G4Material("Dinitrogen-Layer"+std::to_string(i),
+		                    msisAtmosTable[i][2]*g/cm3,
+				    1,
+				    kStateGas,
+				    msisAtmosTable[i][4]*kelvin,
+				    pressure*pascal);
+             diNitrogen->AddElement(N, 2);}
+
+     if(msisAtmosTable[i][3] > zeroThreshold){ 
+	     nComponents++;
+      	     totalAtmosMass += msisAtmosTable[i][3];
+             diOxygen = new G4Material("Dioxgyen-Layer"+std::to_string(i),
 		                    msisAtmosTable[i][3]*g/cm3,
 				    1,
 				    kStateGas,
 				    msisAtmosTable[i][4]*kelvin,
 				    pressure*pascal);
-     diNitrogen->AddElement(N, 2);
+             diOxygen->AddElement(O, 2);}
+     
+     if(msisAtmosTable[i][6] > zeroThreshold){ 
+	     nComponents++;
+      	     totalAtmosMass += msisAtmosTable[i][6];}
+     if(msisAtmosTable[i][7] > zeroThreshold){ 
+	     nComponents++;
+      	     totalAtmosMass += msisAtmosTable[i][7];}
+     if(msisAtmosTable[i][8] > zeroThreshold){ 
+	     nComponents++;
+      	     totalAtmosMass += msisAtmosTable[i][8];}
+     if(msisAtmosTable[i][9] > zeroThreshold){ 
+	     nComponents++;
+      	     totalAtmosMass += msisAtmosTable[i][9];}
+     
 
 
      layerMaterial = new G4Material("AirLayer"+std::to_string(i),  // name
-		     msisAtmosTable[i][3]*g/cm3, // density
-		     8,                          // number of components
+		     totalAtmosMass*g/cm3, // density
+		     nComponents,                // number of components
 		     kStateGas,                  // state
 		     msisAtmosTable[i][4]*kelvin,// temperature
 		     pressure*pascal); 	         // pressure
     
      // alt [km], O, N2, O2, Mass den [g/cm^3], Temp [K], He, Ar, H, N
-     
+    
+
+
      // O
-     layerMaterial->AddElement(O, // material, mass fraction
-		     msisAtmosTable[i][1]/msisAtmosTable[i][4]);
+     if(msisAtmosTable[i][1] > zeroThreshold) 
+     {
+	layerMaterial->AddElement(O, 
+		       msisAtmosTable[i][1]/totalAtmosMass);
+     }
      // N2
+     if(msisAtmosTable[i][2] > zeroThreshold) 
+     {
      layerMaterial->AddMaterial(diNitrogen, // material, mass fraction
-		     msisAtmosTable[i][2]/msisAtmosTable[i][4]); 
+		     msisAtmosTable[i][2]/totalAtmosMass); 
+     }
      // O2
+     if(msisAtmosTable[i][3] > zeroThreshold) 
+     {
      layerMaterial->AddMaterial(diOxygen, // material, mass fraction
-		     msisAtmosTable[i][3]/msisAtmosTable[i][4]); 
+		     msisAtmosTable[i][3]/totalAtmosMass); 
+     }
      // He 
+     if(msisAtmosTable[i][6] > zeroThreshold) 
+     {
      layerMaterial->AddElement(He, // material, mass fraction
-		     msisAtmosTable[i][6]/msisAtmosTable[i][4]); 
+		     msisAtmosTable[i][6]/totalAtmosMass); 
+     }
      // Ar 
+     if(msisAtmosTable[i][7] > zeroThreshold) 
+     {
      layerMaterial->AddElement(Ar, // material, mass fraction
-		     msisAtmosTable[i][7]/msisAtmosTable[i][4]); 
+		     msisAtmosTable[i][7]/totalAtmosMass); 
+     }
      // H 
+     if(msisAtmosTable[i][8] > zeroThreshold) 
+     {
      layerMaterial->AddElement(H, // material, mass fraction
-		     msisAtmosTable[i][8]/msisAtmosTable[i][4]); 
+		     msisAtmosTable[i][8]/totalAtmosMass); 
+     }
      // N
+     if(msisAtmosTable[i][9] > zeroThreshold) 
+     {
      layerMaterial->AddElement(N, // material, mass fraction
-		     msisAtmosTable[i][9]/msisAtmosTable[i][4]); 
+		     msisAtmosTable[i][9]/totalAtmosMass); 
+     }
      
-     theRest = msisAtmosTable[i][4] - 
-	           (msisAtmosTable[i][1] + 
-		    msisAtmosTable[i][2] + 
-		    msisAtmosTable[i][3] +
-		    msisAtmosTable[i][6] + 
-		    msisAtmosTable[i][7] + 
-		    msisAtmosTable[i][8] + 
-		    msisAtmosTable[i][9]);
-
-     // Below line due to inconsisenties in MSIS total mass density
-     // versus the sum of its constituents
-     if(theRest < 0) theRest = 0;
-
-     layerMaterial->AddMaterial(diNitrogen, theRest);
-
+     
      fLogicLayerArray[i] = new G4LogicalVolume(atmosphereLayer,
 		                   layerMaterial,
 				   "AtmosphereLayer"+std::to_string(i));
@@ -360,16 +399,15 @@ void DetectorConstruction::ConstructSDandFields()
   // B_top = 3.85e-5 T , B_bottom = 5.96e-5 T
 
   // Geomagnetic latitude [radians]
-  G4double lambda = 70 * 180/3.1415926;
+  G4double lambda = 70. * 180./3.1415926;
 
   // Radial distance from Earth's surface in Earth radius units
   G4double r; 
 
   // Earth dipole moment in Tesla-R_e^3
   G4double M = 3.094e-5;   
-  
   G4double B_strength;
-  std::cout << tableSize << std::endl;  
+  
   for(G4int i=0; i<tableSize; i++)
   {
  
@@ -380,7 +418,9 @@ void DetectorConstruction::ConstructSDandFields()
     G4MagneticField* magField = new G4UniformMagField( 
 		  G4ThreeVector(0.0, 0.0, B_strength*tesla) ); 
 		  //G4ThreeVector(0.0, 0.0, 4.905e-5*tesla) ); 
+  
     std::cout << "Layer " << i << " , strength: " << B_strength << std::endl;
+    
     G4FieldManager* globalFieldMgr = 
    G4TransportationManager::GetTransportationManager()->GetFieldManager();
 
