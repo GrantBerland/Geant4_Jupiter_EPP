@@ -37,7 +37,9 @@
 
 class G4VPhysicalVolume;
 class G4LogicalVolume;
-class FieldSetup;
+
+class G4UniformMagField;
+class F03FieldSetup;
 
 /// Detector construction class to define materials and geometry.
 
@@ -48,13 +50,13 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     virtual ~DetectorConstruction();
 
     virtual G4VPhysicalVolume* Construct();
-    virtual void ConstructSDandFields();
+    virtual void ConstructSDandField();
 
   private:
     G4LogicalVolume* fLogicWorld;
     const G4int      tableSize;
     G4LogicalVolume* fLogicLayerArray[101];
-
+    G4Cache<F03FieldSetup*>    fEmFieldSetup;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

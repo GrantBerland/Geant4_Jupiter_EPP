@@ -23,80 +23,47 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: RunAction.cc 99560 2016-09-27 07:03:29Z gcosmo $
+/// \file field/field03/include/F03FieldMessenger.hh
+/// \brief Definition of the F03FieldMessenger class
 //
-/// \file RunAction.cc
-/// \brief Implementation of the RunAction class
+//
+// $Id: F03FieldMessenger.hh 76602 2013-11-13 08:33:35Z gcosmo $
+//
+//
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-#include "RunAction.hh"
-#include "PrimaryGeneratorAction.hh"
-#include "DetectorConstruction.hh"
-// #include "Run.hh"
-// #include "DetectorAnalysis.hh"
+#ifndef F03FieldMessenger_h
+#define F03FieldMessenger_h 1
 
-#include "G4RunManager.hh"
-#include "G4Run.hh"
-#include "G4AccumulableManager.hh"
-#include "G4LogicalVolumeStore.hh"
-#include "G4LogicalVolume.hh"
-#include "G4UnitsTable.hh"
-#include "G4SystemOfUnits.hh"
-// #include "HistoManager.hh"
+#include "G4UImessenger.hh"
 
-#include <fstream>
-
-RunAction::RunAction()
-: G4UserRunAction()
-{
-  fPhotonEnergyVector = new std::vector<G4double>();
-  fPhotonAltitudeVector = new std::vector<G4double>();
-  fElectronEnergyVector = new std::vector<G4double>();
-  fElectronAltitudeVector = new std::vector<G4double>();
-}
+class F03FieldSetup;
+class G4UIdirectory;
+class G4UIcmdWithAnInteger;
+class G4UIcmdWithADoubleAndUnit;
+class G4UIcmdWithoutParameter;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-RunAction::~RunAction()
+class F03FieldMessenger: public G4UImessenger
 {
-  delete fPhotonEnergyVector;
-  delete fPhotonAltitudeVector;
-  delete fElectronEnergyVector;
-  delete fElectronAltitudeVector;
-}
+  public:
+    F03FieldMessenger(F03FieldSetup* );
+    virtual ~F03FieldMessenger();
+ 
+    virtual void SetNewValue(G4UIcommand*, G4String);
+ 
+  private:
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+    F03FieldSetup*             fEMfieldSetup;
 
-void RunAction::BeginOfRunAction(const G4Run*)
-{
-}
+    G4UIdirectory*             fFieldDir;
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-void RunAction::EndOfRunAction(const G4Run*)
-{
+    G4UIcmdWithAnInteger*      fStepperCmd;
+    G4UIcmdWithADoubleAndUnit* fMagFieldCmd;
+    G4UIcmdWithADoubleAndUnit* fMinStepCmd;
+    G4UIcmdWithoutParameter*   fUpdateCmd;
+};
 
-  // Write photon energies to file 
-  if(!fPhotonEnergyVector->empty())
-  {
-    // Photon data
-    std::ofstream outputFile1("photon.txt", std::ios_base::app);
-    for (unsigned int i=0;i<fPhotonEnergyVector->size(); i++) 
-    {
-      outputFile1 << (*fPhotonAltitudeVector)[i] << ","
-	          << (*fPhotonEnergyVector)[i] << "\n";
-    }
-  }
-  if(!fPhotonEnergyVector->empty())
-  {
-    // Electron data
-    std::ofstream outputFile2("electron.txt", std::ios_base::app);
-    for (unsigned int i=0;i<fPhotonEnergyVector->size(); i++) 
-    {
-      outputFile2 << (*fElectronAltitudeVector)[i] << ","
-	          << (*fElectronEnergyVector)[i] << "\n";
-    }
-  }
-
-}
-
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+#endif

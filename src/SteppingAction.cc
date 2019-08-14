@@ -41,13 +41,12 @@
 #include "G4SystemOfUnits.hh"
 //#include "G4AutoLock.hh"
 
-#include <fstream>
 
 SteppingAction::SteppingAction(EventAction* eventAction, RunAction* RuAct)
 : G4UserSteppingAction(),
   fEventAction(eventAction),
   fRunAction(RuAct),
-  fEnergyThreshold_keV(10.)
+  fEnergyThreshold_keV(0.)
 {
 }
 
@@ -62,7 +61,6 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
 {
 
   G4Track* track = step->GetTrack();
-  
   G4String particleName = 
 	  track->GetDynamicParticle()->GetDefinition()->GetParticleName();
   
@@ -72,7 +70,7 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
     // Gets energy delta of particle over step length
     const G4double energyDep = step->GetPreStepPoint()->GetKineticEnergy()
                            - step->GetPostStepPoint()->GetKineticEnergy();
-    if(energyDep > 0.*keV)
+    if(energyDep > fEnergyThreshold_keV*keV)
     {
       // Gets altitude of particle
       G4ThreeVector position = track->GetPosition();
@@ -80,8 +78,8 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
       
       // Adds photon energy to vector owned by RunAction, which is
       // written to a results file per simulation run
-      fRunAction->AddPhotonEnergy(energyDep);
-      fRunAction->AddPhotonAltitude(alt);
+      fRunAction->AddPhotonEnergy(energyDep/keV);
+      fRunAction->AddPhotonAltitude(alt/km);
     }
    
   }
@@ -90,22 +88,21 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
     // Gets energy delta of particle over step length
     const G4double energyDep = step->GetPreStepPoint()->GetKineticEnergy()
                            - step->GetPostStepPoint()->GetKineticEnergy();
-    if(energyDep > 0.*keV)
+    if(energyDep > fEnergyThreshold_keV*keV)
     {
       // Gets altitude of particle
       G4ThreeVector position = track->GetPosition();
       G4double      alt      = position.z();
-      
+      std::cout << "Altitude: " << alt/m << " m" << std::endl;      
+  
       // Adds photon energy to vector owned by RunAction, which is
       // written to a results file per simulation run
-      fRunAction->AddElectronEnergy(energyDep);
-      fRunAction->AddElectronAltitude(alt);
+      fRunAction->AddElectronEnergy(energyDep/keV);
+      fRunAction->AddElectronAltitude(alt/km);
     }
-  
-  
-  
   }
-}
 
+
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

@@ -85,7 +85,7 @@ int main(int argc,char** argv)
   G4Random::setTheSeeds(seeds);
 
   // Construct the default run manager
-#ifdef G4MULTITHREADED
+#ifndef G4MULTITHREADED
   G4MTRunManager* runManager = new G4MTRunManager;
   runManager->SetNumberOfThreads(1);  // (Grant's computer)
 #else

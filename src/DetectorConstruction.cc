@@ -30,22 +30,20 @@
 
 #include "DetectorConstruction.hh"
 
+#include "F03FieldSetup.hh"
+
 #include "G4RunManager.hh"
 #include "G4NistManager.hh"
 #include "G4Box.hh"
 #include "G4Tubs.hh"
-//#include "G4Cons.hh"
-//#include "G4Orb.hh"
-#include "G4Sphere.hh"
 #include "G4Trd.hh"
 #include "G4LogicalVolume.hh"
 #include "G4PVPlacement.hh"
 #include "G4SystemOfUnits.hh"
-#include "G4UniformMagField.hh"
-#include "G4FieldManager.hh"
 #include "G4TransportationManager.hh"
 
-#include <fstream>
+#include "G4AutoDelete.hh"
+#include "G4SDManager.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -388,7 +386,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   return physWorld;
 }
 
-void DetectorConstruction::ConstructSDandFields()
+void DetectorConstruction::ConstructSDandField()
 {
   // Field strength found using an Earth-centric dipole field model
   //
@@ -408,16 +406,30 @@ void DetectorConstruction::ConstructSDandFields()
   G4double M = 3.094e-5;   
   G4double B_strength;
   
-  for(G4int i=0; i<tableSize; i++)
-  {
+  //for(G4int i=0; i<tableSize; i++)
+  //{
  
-    r = 1 + 0.001552475 * i;
+    r = 1 + 0.001552475 * 1; //i;
     B_strength = M/std::pow(r, 3) * 
-	    std::sqrt(1 + 3 * std::pow(std::sin(lambda),2));
+	    std::sqrt(1 + 3 * std::pow( std::sin(lambda), 2 ));
+
     
+    if(!fEmFieldSetup.Get()){
+      F03FieldSetup* emFieldSetup = new F03FieldSetup();    
+      emFieldSetup->SetFieldValue(G4ThreeVector(0.,0.,-B_strength*tesla/100));
+
+      fEmFieldSetup.Put(emFieldSetup);
+      G4AutoDelete::Register(emFieldSetup);
+    }
+    fLogicWorld->SetFieldManager(fEmFieldSetup.Get()->GetLocalFieldManager(), true); 
+ 
+
+
+   //fLogicLayerArray[i]->SetFieldManager(fEmFieldSetup.Get()->GetLocalFieldManager(), true); 
+    
+    /*
     G4MagneticField* magField = new G4UniformMagField( 
 		  G4ThreeVector(0.0, 0.0, B_strength*tesla) ); 
-		  //G4ThreeVector(0.0, 0.0, 4.905e-5*tesla) ); 
   
     std::cout << "Layer " << i << " , strength: " << B_strength << std::endl;
     
@@ -432,8 +444,9 @@ void DetectorConstruction::ConstructSDandFields()
     
     globalFieldMgr->SetDetectorField(magField);
     globalFieldMgr->CreateChordFinder(magField);
+*/
+  //}
 
-  }
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
