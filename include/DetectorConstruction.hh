@@ -55,7 +55,6 @@ class DetectorConstruction : public G4VUserDetectorConstruction
   private:
     G4LogicalVolume* fLogicWorld;
     const G4int      tableSize;
-    G4LogicalVolume* fLogicLayerArray[101];
     G4Cache<F03FieldSetup*>    fEmFieldSetup;
 };
 

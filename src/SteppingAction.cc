@@ -63,13 +63,14 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
   G4Track* track = step->GetTrack();
   G4String particleName = 
 	  track->GetDynamicParticle()->GetDefinition()->GetParticleName();
-  
 
+  std::cout << track->GetPosition().z()/km+1020./2. << std::endl;
   if(particleName == "gamma") 
   { 
     // Gets energy delta of particle over step length
     const G4double energyDep = step->GetPreStepPoint()->GetKineticEnergy()
                            - step->GetPostStepPoint()->GetKineticEnergy();
+    std::cout << energyDep/keV << " keV" << std::endl;
     if(energyDep > fEnergyThreshold_keV*keV)
     {
       // Gets altitude of particle
@@ -88,12 +89,12 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
     // Gets energy delta of particle over step length
     const G4double energyDep = step->GetPreStepPoint()->GetKineticEnergy()
                            - step->GetPostStepPoint()->GetKineticEnergy();
+    std::cout << energyDep/keV << " keV" << std::endl;
     if(energyDep > fEnergyThreshold_keV*keV)
     {
       // Gets altitude of particle
       G4ThreeVector position = track->GetPosition();
       G4double      alt      = position.z();
-      std::cout << "Altitude: " << alt/m << " m" << std::endl;      
   
       // Adds photon energy to vector owned by RunAction, which is
       // written to a results file per simulation run
@@ -101,7 +102,6 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
       fRunAction->AddElectronAltitude(alt/km);
     }
   }
-
 
 }
 

@@ -41,6 +41,7 @@
 
 #include "G4MagneticField.hh"
 #include "G4UniformMagField.hh"
+#include "EarthDipoleField.hh"
 #include "G4FieldManager.hh"
 #include "G4TransportationManager.hh"
 #include "G4Mag_UsualEqRhs.hh"
@@ -76,21 +77,25 @@ F03FieldSetup::F03FieldSetup()
    fLocalStepper(0),
    fFieldMessenger(0)
 {
-  fMagneticField = new G4UniformMagField(G4ThreeVector(3.3*tesla,
+  /*
+  fMagneticField = new G4UniformMagField(G4ThreeVector(0.0,
                                                        0.0, // 0.5*tesla,
-                                                       0.0));
-  fLocalMagneticField = new G4UniformMagField(G4ThreeVector(3.3*tesla,
-                                                            0.0, // 0.5*tesla,
-                                                            0.0));
-
+                                                       3.3*tesla));
+  fLocalMagneticField = new G4UniformMagField(G4ThreeVector(0.0,
+                                                            0.0, 
+							    3.3*tesla));
+  */
+  fMagneticField      = new EarthDipoleField(); 
+  fLocalMagneticField = new EarthDipoleField();
+	  
   fFieldMessenger = new F03FieldMessenger(this);
  
   fEquation = new G4Mag_UsualEqRhs(fMagneticField);
   fLocalEquation = new G4Mag_UsualEqRhs(fLocalMagneticField);
  
   // Default values
-  fMinStep     = 1.*mm;//0.25*mm ; 
-  fStepperType = 4;
+  fMinStep     = 1.*m ; 
+  fStepperType = 0;
 
   fFieldManager = GetGlobalFieldManager();
   fLocalFieldManager = new G4FieldManager();
@@ -224,7 +229,8 @@ void F03FieldSetup::SetFieldValue(G4ThreeVector fieldVector)
 
   if(fieldVector != G4ThreeVector(0.,0.,0.))
   {
-    fMagneticField = new  G4UniformMagField(fieldVector);
+    //fMagneticField = new  G4UniformMagField(fieldVector);
+    fMagneticField = new EarthDipoleField();
   }
   else
   {
@@ -250,19 +256,6 @@ G4FieldManager* F03FieldSetup::GetGlobalFieldManager()
 {
   return G4TransportationManager::GetTransportationManager()
                                   ->GetFieldManager();
-}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-G4ThreeVector F03FieldSetup::GetConstantFieldValue()
-{
-  static G4double fieldValue[6],  position[4];
-  position[0] = position[1] = position[2] = position[3] = 0.0;
-
-  fMagneticField->GetFieldValue( position, fieldValue);
-  G4ThreeVector fieldVec(fieldValue[0], fieldValue[1], fieldValue[2]);
-
-  return fieldVec;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

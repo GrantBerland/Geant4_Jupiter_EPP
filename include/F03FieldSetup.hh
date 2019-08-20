@@ -38,6 +38,7 @@
 
 #include "G4MagneticField.hh"
 #include "G4UniformMagField.hh"
+#include "EarthDipoleField.hh"
 
 class G4FieldManager;
 class G4ChordFinder;
@@ -67,7 +68,7 @@ public:
 
   void SetFieldValue(G4ThreeVector fieldVector);
   void SetFieldValue(G4double      fieldValue);
-  G4ThreeVector GetConstantFieldValue();
+  //G4ThreeVector GetConstantFieldValue();
 
   void UpdateField();
 
@@ -85,8 +86,10 @@ protected:
   G4ChordFinder*          fLocalChordFinder;
   G4Mag_UsualEqRhs*       fEquation;
   G4Mag_UsualEqRhs*       fLocalEquation;
-  G4MagneticField*        fMagneticField;
-  G4MagneticField*        fLocalMagneticField;
+//  G4MagneticField*        fMagneticField;
+//  G4MagneticField*        fLocalMagneticField;
+  EarthDipoleField*        fMagneticField;
+  EarthDipoleField*        fLocalMagneticField;
 
   G4MagIntegratorStepper* fStepper;
   G4MagIntegratorStepper* fLocalStepper;

@@ -66,7 +66,7 @@ PrimaryGeneratorAction::~PrimaryGeneratorAction()
 
 void PrimaryGeneratorAction::GenerateParticles(ParticleSample* r)
 {
-  G4double E0 = 500*keV;
+  G4double E0 = 300*keV;
   
   G4double theta = G4UniformRand() * 2. * 3.1415926; // u ~ Unif[0, 2 pi)
   G4double radialPosition = G4UniformRand();  // [0, 1)
