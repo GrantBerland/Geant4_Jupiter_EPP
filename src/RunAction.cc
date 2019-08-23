@@ -73,28 +73,40 @@ void RunAction::BeginOfRunAction(const G4Run*)
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 void RunAction::EndOfRunAction(const G4Run*)
 {
+  std::cout << "Writing vector to file...";
+
+  std::ofstream outputFile;
   // Write photon energies to file 
   if(!fPhotonEnergyVector->empty())
   {
+    outputFile.open("results.txt", std::ios_base::app);
+
     // Photon data
-    std::ofstream outputFile1("photon.txt", std::ios_base::app);
     for (unsigned int i=0;i<fPhotonEnergyVector->size(); i++) 
     {
-      outputFile1 << (*fPhotonAltitudeVector)[i] << ","
-	          << (*fPhotonEnergyVector)[i] << "\n";
+      outputFile << (*fPhotonAltitudeVector)[i] << ","
+	          << (*fPhotonEnergyVector)[i] << ",g" << "\n";
     }
+    outputFile.close();
+    fPhotonAltitudeVector->clear(); 
+    fPhotonEnergyVector->clear();
   }
   if(!fElectronEnergyVector->empty())
   {
+    outputFile.open("results.txt", std::ios_base::app);
+    
     // Electron data
-    std::ofstream outputFile2("electron.txt", std::ios_base::app);
     for (unsigned int i=0;i<fElectronEnergyVector->size(); i++) 
     {
-      outputFile2 << (*fElectronAltitudeVector)[i] << ","
-	          << (*fElectronEnergyVector)[i] << "\n";
+      outputFile << (*fElectronAltitudeVector)[i] << ","
+	          << (*fElectronEnergyVector)[i] << ",e" <<"\n";
     }
+    outputFile.close();
+    fElectronAltitudeVector->clear();
+    fElectronEnergyVector->clear(); 
   }
 
+  std::cout << "complete!" << std::endl;
 }
 
 

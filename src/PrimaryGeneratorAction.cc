@@ -41,14 +41,21 @@
 #include "G4SystemOfUnits.hh"
 #include "G4UnitsTable.hh"
 #include "Randomize.hh"
+#include "PrimaryGeneratorMessenger.hh"
 #include <math.h>
 
 
 PrimaryGeneratorAction::PrimaryGeneratorAction()
 : G4VUserPrimaryGeneratorAction(),
-  fParticleGun(0)
+  fParticleGun(0),
+  fPrimaryMessenger(0),
+  fDistType(0),
+  fE0(0.)
 {
   fParticleGun  = new G4ParticleGun();
+  
+  fPrimaryMessenger = new PrimaryGeneratorMessenger(this);
+  
   G4ParticleDefinition* electronParticle = G4ParticleTable::GetParticleTable()->FindParticle("e-");
 
   // Selects electron for particle type
@@ -60,13 +67,13 @@ PrimaryGeneratorAction::PrimaryGeneratorAction()
 PrimaryGeneratorAction::~PrimaryGeneratorAction()
 {
   delete fParticleGun;
+  delete fPrimaryMessenger;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void PrimaryGeneratorAction::GenerateParticles(ParticleSample* r)
 {
-  G4double E0 = 300*keV;
   
   G4double theta = G4UniformRand() * 2. * 3.1415926; // u ~ Unif[0, 2 pi)
   G4double radialPosition = G4UniformRand();  // [0, 1)
@@ -81,7 +88,18 @@ void PrimaryGeneratorAction::GenerateParticles(ParticleSample* r)
   r->yDir = 0;
   r->zDir = -1;
 
-  r->energy = -E0 * std::log(1 - G4UniformRand());
+
+  switch(fDistType)
+  {
+    case(0):
+      r->energy = -fE0 * std::log(1 - G4UniformRand());
+      break;
+    case(1):
+      r->energy = fE0;
+      break;
+    default:
+     throw std::invalid_argument("Need to enter an energy distribution!");
+  }  
 }
 
 void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)

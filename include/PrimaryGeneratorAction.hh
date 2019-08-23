@@ -40,6 +40,7 @@ class G4ParticleGun;
 // class G4GeneralParticleSource;
 class G4Event;
 class G4Box;
+class PrimaryGeneratorMessenger;
 
 struct ParticleSample{
 	G4double xPos, yPos, zPos;
@@ -62,12 +63,17 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
     virtual void GeneratePrimaries(G4Event*);         
 
     void GenerateParticles(ParticleSample*);
-
-    // // method to access particle gun
+    void SetEnergy(G4double E0){ fE0 = E0;};
+    void SetDistribution(G4int se){ fDistType = se; };
+    
+    // method to access particle gun
     const G4ParticleGun* GetParticleGun() const { return fParticleGun; }
   
   private:
     G4ParticleGun*  fParticleGun; // pointer a to G4 gun class
+    PrimaryGeneratorMessenger* fPrimaryMessenger;
+    G4int           fDistType;
+    G4double        fE0;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

@@ -26,5 +26,16 @@
 /event/verbose 0
 /tracking/verbose 0
 
-/run/beamOn 100000
+# 0 = exponential 
+# 1 = monoenergetic
+/energy/setDistributionType 0
 
+# Either exponential folding energy or monoenergetic beam energy
+/energy/setFoldingEnergy 100.  # [keV]
+
+# Number of particles to run 
+# (breaking it up prevents results vector from getting too large
+# by writing to file at the end of every run)
+/run/beamOn 100
+/run/beamOn 100
+/run/beamOn 100

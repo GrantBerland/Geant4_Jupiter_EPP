@@ -71,28 +71,18 @@ public:
   //G4ThreeVector GetConstantFieldValue();
 
   void UpdateField();
-
-  G4FieldManager* GetLocalFieldManager() { return fLocalFieldManager;}
+  
+  // Find the global Field Manager
+  G4FieldManager*         GetGlobalFieldManager() ;
 
 protected:
 
-  // Find the global Field Manager
-
-  G4FieldManager*         GetGlobalFieldManager() ;
-
   G4FieldManager*         fFieldManager;
-  G4FieldManager*         fLocalFieldManager;
   G4ChordFinder*          fChordFinder;
-  G4ChordFinder*          fLocalChordFinder;
   G4Mag_UsualEqRhs*       fEquation;
-  G4Mag_UsualEqRhs*       fLocalEquation;
-//  G4MagneticField*        fMagneticField;
-//  G4MagneticField*        fLocalMagneticField;
-  EarthDipoleField*        fMagneticField;
-  EarthDipoleField*        fLocalMagneticField;
+  EarthDipoleField*       fMagneticField;
 
   G4MagIntegratorStepper* fStepper;
-  G4MagIntegratorStepper* fLocalStepper;
   G4int                   fStepperType;
 
   G4double                fMinStep;

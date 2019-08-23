@@ -395,8 +395,7 @@ void DetectorConstruction::ConstructSDandField()
     G4AutoDelete::Register(emFieldSetup);
   }
     fLogicWorld->SetFieldManager(fEmFieldSetup.Get()->
-		        GetLocalFieldManager(), true); 
- 
+		        GetGlobalFieldManager(), true); 
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
