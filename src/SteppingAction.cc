@@ -41,7 +41,6 @@
 #include "G4SystemOfUnits.hh"
 //#include "G4AutoLock.hh"
 
-
 SteppingAction::SteppingAction(EventAction* eventAction, RunAction* RuAct)
 : G4UserSteppingAction(),
   fEventAction(eventAction),
@@ -79,6 +78,10 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
       // written to a results file per simulation run
       fRunAction->AddPhotonEnergy(energyDep/keV);
       fRunAction->AddPhotonAltitude(alt/km);
+
+      G4int altitudeAddress = std::floor(1020./2. + alt/km);
+      fRunAction->fEnergyHist->AddCountToBin(altitudeAddress, 
+		      			    energyDep/keV);
     }
    
   }
@@ -97,6 +100,10 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
       // written to a results file per simulation run
       fRunAction->AddElectronEnergy(energyDep/keV);
       fRunAction->AddElectronAltitude(alt/km);
+      
+      G4int altitudeAddress = std::floor(1020./2. + alt/km);
+      fRunAction->fEnergyHist->AddCountToBin(altitudeAddress, 
+		      			    energyDep/keV);
     }
   }
 

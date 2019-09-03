@@ -42,16 +42,19 @@
 #include "G4UnitsTable.hh"
 #include "G4SystemOfUnits.hh"
 // #include "HistoManager.hh"
+#include "myHistogram.hh"
 
 #include <fstream>
 
 RunAction::RunAction()
 : G4UserRunAction()
 {
-  fPhotonEnergyVector = new std::vector<G4double>();
-  fPhotonAltitudeVector = new std::vector<G4double>();
-  fElectronEnergyVector = new std::vector<G4double>();
+  fPhotonEnergyVector     = new std::vector<G4double>();
+  fPhotonAltitudeVector   = new std::vector<G4double>();
+  fElectronEnergyVector   = new std::vector<G4double>();
   fElectronAltitudeVector = new std::vector<G4double>();
+
+  fEnergyHist             = new myHistogram();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -62,6 +65,7 @@ RunAction::~RunAction()
   delete fPhotonAltitudeVector;
   delete fElectronEnergyVector;
   delete fElectronAltitudeVector;
+  delete fEnergyHist;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -107,6 +111,8 @@ void RunAction::EndOfRunAction(const G4Run*)
   }
 
   std::cout << "complete!" << std::endl;
+
+  fEnergyHist->WriteHistogramToFile("energyHistogram.txt");
 }
 
 

@@ -84,17 +84,19 @@ void PrimaryGeneratorAction::GenerateParticles(ParticleSample* r)
   r->yPos = diskRadius * std::sqrt(radialPosition) * std::sin(theta);
   r->zPos = 500.*km;
 
-  r->xDir = 0;
-  r->yDir = 0;
-  r->zDir = -1;
+  // Starts electrons with gyro motion about field line
+  G4double phi = G4UniformRand() * 2. * 3.1415926;
+  r->xDir = -std::sin(phi) / std::sqrt(2);
+  r->yDir =  std::cos(phi) / std::sqrt(2);
+  r->zDir = -1 / std::sqrt(2);
 
 
-  switch(fDistType)
+  switch(fDistType) // set by PrimaryMessenger
   {
-    case(0):
+    case(0): // Exponential energy distribution with folding energy fE0
       r->energy = -fE0 * std::log(1 - G4UniformRand());
       break;
-    case(1):
+    case(1): // Monoenergetic beam with energy fE0
       r->energy = fE0;
       break;
     default:
@@ -106,16 +108,14 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 {
 
   ParticleSample* r = new ParticleSample();
+  
   GenerateParticles(r);
 
   fParticleGun->SetParticlePosition(
-		  G4ThreeVector(r->xPos, r->yPos, r->zPos));
-  
+		  G4ThreeVector(r->xPos, r->yPos, r->zPos)); 
   fParticleGun->SetParticleMomentumDirection(
 		  G4ThreeVector(r->xDir, r->yDir, r->zDir));
-  
   fParticleGun->SetParticleEnergy(r->energy);
-
   fParticleGun->GeneratePrimaryVertex(anEvent);
 
   delete r;

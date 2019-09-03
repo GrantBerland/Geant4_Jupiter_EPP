@@ -35,6 +35,7 @@
 #include "G4Accumulable.hh"
 #include "globals.hh"
 #include <vector>
+#include "myHistogram.hh"
 
 // Choose your fighter:
 // #include "g4root.hh"
@@ -43,6 +44,8 @@
 
 class G4Run;
 class SteppingAction;
+class myHistogram;
+
 /// Run action class
 ///
 /// In EndOfRunAction(), it calculates the dose in the selected volume
@@ -63,7 +66,9 @@ class RunAction : public G4UserRunAction
     inline void AddPhotonAltitude(G4double alt);
     inline void AddElectronEnergy(G4double ene);
     inline void AddElectronAltitude(G4double alt);
-  
+ 
+  public:
+    myHistogram           *fEnergyHist;
   private:
     std::vector<G4double> *fPhotonEnergyVector;
     std::vector<G4double> *fPhotonAltitudeVector;
