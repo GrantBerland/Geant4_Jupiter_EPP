@@ -6,6 +6,13 @@
 #include <string>
 #include <fstream>
 
+// Written by Grant Berland
+//
+// Header-only histogramming class to record energy deposition
+// per altitude bin
+//
+
+
 class myHistogram
 {
 public:
@@ -41,7 +48,7 @@ inline void myHistogram::WriteHistogramToFile(std::string filename)
 
   for(unsigned int i=0; i<1000; i++)
   {
-	  outputFile << histogramArray[i] << "\n";
+    outputFile << histogramArray[i] << "\n";
   }
 
   outputFile.close();

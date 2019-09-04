@@ -77,7 +77,6 @@ void RunAction::BeginOfRunAction(const G4Run*)
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 void RunAction::EndOfRunAction(const G4Run*)
 {
-  std::cout << "Writing vector to file...";
 
   std::ofstream outputFile;
   // Write photon energies to file 
@@ -110,9 +109,9 @@ void RunAction::EndOfRunAction(const G4Run*)
     fElectronEnergyVector->clear(); 
   }
 
-  std::cout << "complete!" << std::endl;
-
+  std::cout << "Writing results to histogram...";
   fEnergyHist->WriteHistogramToFile("energyHistogram.txt");
+  std::cout << "complete!" << std::endl;
 }
 
 

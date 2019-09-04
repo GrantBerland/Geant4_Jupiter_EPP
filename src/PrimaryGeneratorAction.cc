@@ -84,7 +84,7 @@ void PrimaryGeneratorAction::GenerateParticles(ParticleSample* r)
   r->yPos = diskRadius * std::sqrt(radialPosition) * std::sin(theta);
   r->zPos = 500.*km;
 
-  // Starts electrons with gyro motion about field line
+  // Starts electrons with gyromotion about field line
   G4double phi = G4UniformRand() * 2. * 3.1415926;
   r->xDir = -std::sin(phi) / std::sqrt(2);
   r->yDir =  std::cos(phi) / std::sqrt(2);
