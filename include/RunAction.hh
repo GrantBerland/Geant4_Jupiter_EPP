@@ -46,6 +46,8 @@ class G4Run;
 class SteppingAction;
 class myHistogram;
 
+class RunActionMessenger;
+
 /// Run action class
 ///
 /// In EndOfRunAction(), it calculates the dose in the selected volume
@@ -66,14 +68,19 @@ class RunAction : public G4UserRunAction
     inline void AddPhotonAltitude(G4double alt);
     inline void AddElectronEnergy(G4double ene);
     inline void AddElectronAltitude(G4double alt);
- 
+
+    void SetHistFileName(G4String name){fHistogramFileName=name;};
+
   public:
     myHistogram           *fEnergyHist;
   private:
+    RunActionMessenger*    fRunActionMessenger;
+    G4String 		   fHistogramFileName;
     std::vector<G4double> *fPhotonEnergyVector;
     std::vector<G4double> *fPhotonAltitudeVector;
     std::vector<G4double> *fElectronEnergyVector;
     std::vector<G4double> *fElectronAltitudeVector;
+    
 };
 
 // TODO: make this 1 or 2 methods with particle type selection, etc.

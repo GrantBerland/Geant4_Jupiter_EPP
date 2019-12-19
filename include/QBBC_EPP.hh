@@ -45,7 +45,7 @@ class QBBC_EPP : public G4VModularPhysicsList
 {
 public:
 
-  QBBC_EPP(G4int ver = 1, const G4String& type = "QBBC");
+  QBBC_EPP(G4int ver = 2, const G4String& type = "QBBC");
 
   virtual ~QBBC_EPP();
 

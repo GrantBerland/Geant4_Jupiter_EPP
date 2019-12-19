@@ -85,12 +85,18 @@ QBBC_EPP::QBBC_EPP( G4int ver, const G4String&)
    // Hadron Physics
   RegisterPhysics( new G4HadronElasticPhysicsXS(ver) );
 
+  // Stopping physics for what? (all parts.?)
   RegisterPhysics( new G4StoppingPhysics(ver) );
 
+  // General hadronic/ionic interactions
   RegisterPhysics( new G4IonPhysics(ver) );
 
-  RegisterPhysics( new G4HadronInelasticQBBC(ver));
+  // Proton inelastic scattering
+  RegisterPhysics( new G4HadronInelasticQBBC(ver) );
 
+  // Charge exchange
+  RegisterPhysics( new G4ChargeExchangePhysics );
+  
   // Neutron tracking cut
   // probably don't need this? -GB
   //RegisterPhysics( new G4NeutronTrackingCut(ver) );
