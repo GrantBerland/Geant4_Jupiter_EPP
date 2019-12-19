@@ -68,7 +68,8 @@ QBBC_EPP::QBBC_EPP( G4int ver, const G4String&)
   G4cout << "<<< Reference Physics List QBBC "
 	 <<G4endl;	
 
-  defaultCutValue = 0.7*mm;  
+  //defaultCutValue = 0.7*mm;  
+  defaultCutValue = 50.*mm;  
   SetVerboseLevel(ver);
 
   // EM Physics
@@ -78,7 +79,8 @@ QBBC_EPP::QBBC_EPP( G4int ver, const G4String&)
   RegisterPhysics( new G4EmExtraPhysics(ver) );
 
   // Decays
-  RegisterPhysics( new G4DecayPhysics(ver) );
+  // turn back on later? -GB
+  //RegisterPhysics( new G4DecayPhysics(ver) );
 
    // Hadron Physics
   RegisterPhysics( new G4HadronElasticPhysicsXS(ver) );
@@ -90,7 +92,8 @@ QBBC_EPP::QBBC_EPP( G4int ver, const G4String&)
   RegisterPhysics( new G4HadronInelasticQBBC(ver));
 
   // Neutron tracking cut
-  RegisterPhysics( new G4NeutronTrackingCut(ver) );
+  // probably don't need this? -GB
+  //RegisterPhysics( new G4NeutronTrackingCut(ver) );
 }		 
 
 QBBC_EPP::~QBBC_EPP() 

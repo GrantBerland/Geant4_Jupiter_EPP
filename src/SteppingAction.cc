@@ -97,7 +97,17 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
       // Gets altitude of particle
       G4ThreeVector position = track->GetPosition();
       G4double      alt      = position.z();
-      std::cout << "Altitude: " << alt/km << " km" << std::endl;  
+      
+      
+      //std::cout << "Altitude: " << alt/km << " km" << std::endl;  
+      
+      
+       std::cout << '\r'
+          << std::setw(2) << std::setfill('0')  
+          << std::setw(10) << "Altitude: "
+	  << std::setw(4) << (alt/km+1020.)  
+	  << std::setw(3) << " km" << std::flush; 
+      
       // Adds photon energy to vector owned by RunAction, which is
       // written to a results file per simulation run
       //fRunAction->AddElectronEnergy(energyDep/keV);
