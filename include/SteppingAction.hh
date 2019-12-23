@@ -41,6 +41,8 @@ class EventAction;
 class RunAction;
 class G4LogicalVolume;
 
+class SteppingActionMessenger;
+
 /// Stepping action class
 ///
 
@@ -51,13 +53,17 @@ class SteppingAction : public G4UserSteppingAction
 
     virtual ~SteppingAction();
 
+    void SetDataCollection(G4int type){ fDataCollectionType = type; }; 
+    
     // method from the base class
     virtual void UserSteppingAction(const G4Step*);
 
   private:
     EventAction*  fEventAction;
     RunAction*    fRunAction;
-    G4double      fEnergyThreshold_keV; 
+    G4double      fEnergyThreshold_keV;
+    G4int         fDataCollectionType;
+    SteppingActionMessenger* fSteppingMessenger;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

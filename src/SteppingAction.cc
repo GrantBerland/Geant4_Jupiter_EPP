@@ -39,22 +39,42 @@
 #include "RunAction.hh"
 #include "G4LogicalVolume.hh"
 #include "G4SystemOfUnits.hh"
+#include "SteppingActionMessenger.hh"
 //#include "G4AutoLock.hh"
 
 SteppingAction::SteppingAction(EventAction* eventAction, RunAction* RuAct)
 : G4UserSteppingAction(),
   fEventAction(eventAction),
   fRunAction(RuAct),
-  fEnergyThreshold_keV(0.)
+  fEnergyThreshold_keV(0.),
+  fDataCollectionType(0),
+  fSteppingMessenger()
 {
-}
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+  fSteppingMessenger = new SteppingActionMessenger(this);
+
+  switch(fDataCollectionType)
+  {
+    
+    case(0):
+      G4cout << "Energy deposition being recorded...";
+      fRunAction->fEnergyHist->InitializeHistogram();
+      G4cout << "histogram initialized!" << G4endl;
+      break;
+    
+    case(1):
+      G4cout << "Particle trajectory being recorded..." << G4endl;
+      break;
+    
+    default:
+      G4cout << "No data being recorded, exiting..." << G4endl; 
+      break;
+  }
+
+}
 
 SteppingAction::~SteppingAction()
 {}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void SteppingAction::UserSteppingAction(const G4Step* step)
 {
@@ -62,62 +82,62 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
   G4Track* track = step->GetTrack();
   G4String particleName = 
 	  track->GetDynamicParticle()->GetDefinition()->GetParticleName();
-/*
-  if(particleName == "gamma") 
-  { 
-    // Gets energy delta of particle over step length
-    const G4double energyDep = step->GetPreStepPoint()->GetKineticEnergy()
-                           - step->GetPostStepPoint()->GetKineticEnergy();
-    if(energyDep > fEnergyThreshold_keV*keV)
-    {
-      // Gets altitude of particle
-      G4ThreeVector position = track->GetPosition();
-      G4double      alt      = position.z();
-      
-      // Adds photon energy to vector owned by RunAction, which is
-      // written to a results file per simulation run
-      fRunAction->AddPhotonEnergy(energyDep/keV);
-      fRunAction->AddPhotonAltitude(alt/km);
-
-      // TODO: implement later!
-      //G4int altitudeAddress = std::floor(1020./2. + alt/km);
-      //fRunAction->fEnergyHist->AddCountToBin(altitudeAddress, 
-		      			    energyDep/keV);
-    }
-   
-  }
-  */
-  if(particleName == "e-")
+  
+  switch(fDataCollectionType)
   {
-    // Gets energy delta of particle over step length
-    const G4double energyDep = step->GetPreStepPoint()->GetKineticEnergy()
-                           - step->GetPostStepPoint()->GetKineticEnergy();
-    if(energyDep > fEnergyThreshold_keV*keV)
-    {
-      // Gets altitude of particle
-      G4ThreeVector position = track->GetPosition();
-      G4double      alt      = position.z();
+    
+    case(0):
+  
+      if(particleName == "e-")
+      {
+
+    	// Gets energy delta of particle over step length
+    	const G4double energyDep = step->GetPreStepPoint()->GetKineticEnergy() - 
+		step->GetPostStepPoint()->GetKineticEnergy();
+    	
+	if(energyDep > fEnergyThreshold_keV*keV)
+    	{
+	  // Gets altitude of particle
+      	  G4ThreeVector position = track->GetPosition();
+      	  G4double      alt      = position.z();
       
       
-      //std::cout << "Altitude: " << alt/km << " km" << std::endl;  
-      
-      
-       std::cout << '\r'
+       	  std::cout << '\r'
           << std::setw(2) << std::setfill('0')  
           << std::setw(10) << "Altitude: "
 	  << std::setw(4) << (alt/km+1020.)  
 	  << std::setw(3) << " km" << std::flush; 
       
-      // Adds photon energy to vector owned by RunAction, which is
-      // written to a results file per simulation run
-      //fRunAction->AddElectronEnergy(energyDep/keV);
-      //fRunAction->AddElectronAltitude(alt/km);
-      
-      G4int altitudeAddress = std::floor(1020./2. + alt/km);
-      fRunAction->fEnergyHist->AddCountToBin(altitudeAddress, 
+          // Adds energy deposition to vector owned by RunAction, which is
+          // written to a results file per simulation run
+      	  G4int altitudeAddress = std::floor(1020./2. + alt/km);
+      	  fRunAction->fEnergyHist->AddCountToBin(altitudeAddress, 
 		      			    energyDep/keV);
+        }
     }
+      break;
+    
+    case(1):
+      if(particleName == "e-")
+      {
+        G4ThreeVector position = track->GetPosition();
+        G4double pos_array[3] = { position.x()/m, 
+	      		          position.y()/m, 
+			          position.z()/m };
+        // Writes 3D position vector to results file
+	// owned by RunAction
+        fRunAction->fEnergyHist->WriteDirectlyToFile("test.txt", 
+			                             pos_array);
+      
+      }
+      break;
+    
+    default: 
+      throw std::runtime_error("Enter a valid data collection type!");
+      break;
+  
   }
+
 
 }
 

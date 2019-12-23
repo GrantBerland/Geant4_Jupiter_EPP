@@ -116,6 +116,7 @@ void RunAction::EndOfRunAction(const G4Run*)
     fElectronEnergyVector->clear(); 
   }
   */
+  
   std::cout << "Writing results to histogram...";
   fEnergyHist->WriteHistogramToFile(fHistogramFileName);
   std::cout << "complete!" << std::endl;

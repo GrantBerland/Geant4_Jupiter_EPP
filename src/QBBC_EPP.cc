@@ -95,7 +95,7 @@ QBBC_EPP::QBBC_EPP( G4int ver, const G4String&)
   RegisterPhysics( new G4HadronInelasticQBBC(ver) );
 
   // Charge exchange
-  RegisterPhysics( new G4ChargeExchangePhysics );
+  //RegisterPhysics( new G4ChargeExchangePhysics );
   
   // Neutron tracking cut
   // probably don't need this? -GB

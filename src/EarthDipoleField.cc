@@ -2,8 +2,6 @@
 
 #include "EarthDipoleField.hh"
 
-
-
 EarthDipoleField::EarthDipoleField()
 : G4MagneticField(),
   fDipoleMoment(8.0e6),    // Tesla-km^3
@@ -33,7 +31,7 @@ void EarthDipoleField::GetFieldValue(const G4double Point[4],
   Bfield[2] = -fDipoleMoment / std::pow(z, 3) 
   	  * std::sqrt(1 + 3 * std::pow(std::sin(geomagLat_radians), 2)) 
   	  * tesla; // Bz
-  //Bfield[2] = 0; // Ex
+  
   Bfield[3] = 0; // Ex
   Bfield[4] = 0; // Ey
   Bfield[5] = 0; // Ez
