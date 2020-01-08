@@ -74,30 +74,47 @@ PrimaryGeneratorAction::~PrimaryGeneratorAction()
 
 void PrimaryGeneratorAction::GenerateParticles(ParticleSample* r)
 {
-  
+
+  // Initial position RV's
   G4double theta = G4UniformRand() * 2. * 3.1415926; // u ~ Unif[0, 2 pi)
   G4double radialPosition = G4UniformRand();  // [0, 1)
   G4double diskRadius = 400.*km;
 
   // Random uniform sampling on a circular area
-  r->xPos = diskRadius * std::sqrt(radialPosition) * std::cos(theta);
-  r->yPos = diskRadius * std::sqrt(radialPosition) * std::sin(theta);
+  //r->xPos = diskRadius * std::sqrt(radialPosition) * std::cos(theta);
+  r->xPos = 0.;
+  r->yPos = 0.;
+  //r->yPos = diskRadius * std::sqrt(radialPosition) * std::sin(theta);
   r->zPos = 500.*km;
 
+  // Particle attribute RV's
   // Starts electrons with gyromotion about field line
+  /*
+  G4double pitchAngle = G4UniformRand() * 3.1415926;
+  G4double gyroPhase  = G4UniformRand() * 2. * 3.1415926;
+  gyroPhase = 3.1415926 / 2.;
+  // test
+  pitchAngle = 3.1415926 / 8.; // rad
+  r->xDir = -std::sin(pitchAngle) * std::sin(gyroPhase) / std::sqrt(2);
+  r->yDir =  std::sin(pitchAngle) * std::cos(gyroPhase) / std::sqrt(2);
+  r->zDir = -1/std::sqrt(2);//-std::cos(pitchAngle);
+  */
   G4double phi = G4UniformRand() * 2. * 3.1415926;
   r->xDir = -std::sin(phi) / std::sqrt(2);
   r->yDir =  std::cos(phi) / std::sqrt(2);
   r->zDir = -1 / std::sqrt(2);
 
+  
+  std::cout << "dir = (" << r->xDir << ',' << r->yDir << ',' 
+	  << r->zDir << ")" << std::endl; 
 
   switch(fDistType) // set by PrimaryMessenger
   {
     case(0): // Exponential energy distribution with folding energy fE0
-      r->energy = -fE0 * std::log(1 - G4UniformRand());
+      r->energy = -fE0 * std::log(1 - G4UniformRand()) * keV;
       break;
     case(1): // Monoenergetic beam with energy fE0
-      r->energy = fE0;
+      r->energy = fE0 * keV;
       break;
     default:
      throw std::invalid_argument("Need to enter an energy distribution!");

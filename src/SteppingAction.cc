@@ -86,7 +86,7 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
   switch(fDataCollectionType)
   {
     
-    case(0):
+    case(0):  // Collects energy deposition per altitude
   
       if(particleName == "e-")
       {
@@ -117,17 +117,22 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
     }
       break;
     
-    case(1):
+    case(1):  // Collects particle trajectory (warning, lots of data!)
       if(particleName == "e-")
       {
+
+        const G4double partEnergy = 
+		step->GetPreStepPoint()->GetKineticEnergy();	
         G4ThreeVector position = track->GetPosition();
-        G4double pos_array[3] = { position.x()/m, 
+        G4double pos_array[4] = { position.x()/m, 
 	      		          position.y()/m, 
-			          position.z()/m };
+			          position.z()/m,
+				  partEnergy/keV};
         // Writes 3D position vector to results file
 	// owned by RunAction
-        fRunAction->fEnergyHist->WriteDirectlyToFile("test.txt", 
-			                             pos_array);
+        fRunAction->fEnergyHist->WriteDirectlyToFile("part_traj.txt", 
+			                             pos_array,
+				sizeof(pos_array)/sizeof(*pos_array));
       
       }
       break;
@@ -137,7 +142,6 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
       break;
   
   }
-
 
 }
 

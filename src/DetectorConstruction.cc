@@ -73,6 +73,9 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   G4Material* vacuum_material = new G4Material("Vacuum",
               1.0 , 1.01*g/mole, 1.0E-25*g/cm3,
               kStateGas, 2.73*kelvin, 3.0E-18*pascal );
+  G4Material* low_density_material = new G4Material("Low_dens",
+              1.0 , 1.01*g/mole, 1.0E-8*g/cm3,
+              kStateGas, 2.73*kelvin, 3.0E-9*pascal );
 
   // Option to switch on/off checking of volumes overlaps
   G4bool checkOverlaps = true;
@@ -306,7 +309,9 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
       	     totalAtmosMass += msisAtmosTable[i][9];}
      
 
-
+     // test
+     //layerMaterial = low_density_material;
+     
      layerMaterial = new G4Material("AirLayer"+std::to_string(i),  // name
 		     totalAtmosMass*g/cm3, // density
 		     nComponents,                // number of components
@@ -316,8 +321,6 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
     
      // alt [km], O, N2, O2, Mass den [g/cm^3], Temp [K], He, Ar, H, N
     
-
-
      // O
      if(msisAtmosTable[i][1] > zeroThreshold) 
      {
@@ -360,7 +363,6 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
      layerMaterial->AddElement(N, // material, mass fraction
 		     msisAtmosTable[i][9]/totalAtmosMass); 
      }
-     
      
      logicLayer = new G4LogicalVolume(atmosphereLayer,
 		                   layerMaterial,

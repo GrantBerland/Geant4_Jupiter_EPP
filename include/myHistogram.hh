@@ -29,7 +29,7 @@ public:
   void WriteHistogramToFile(std::string);
 
   // Writes arbitrary data line directly to a filename specified
-  void WriteDirectlyToFile(std::string, double*);
+  void WriteDirectlyToFile(std::string, double*, size_t);
 
 
 private:
@@ -81,24 +81,23 @@ inline void myHistogram::WriteHistogramToFile(std::string filename)
 }
   
 inline void myHistogram::WriteDirectlyToFile(std::string filename, 
-		                             double *data)
+		                             double *data,
+					     size_t  arraySize)
 {
   std::ofstream outputFile;
   
   // OPEN
   outputFile.open(filename, std::ios_base::app);
 
-  size_t data_length = sizeof(data)/sizeof(*data);
-  data_length = 3; 
+  //data_length = 3; 
   // Writes entire line in 'data[]' to file, comma delimited
-  for(unsigned int i=0; i<data_length; i++)
+  for(unsigned int i=0; i<arraySize-1; i++)
   {
     outputFile << data[i] << ',';
   }
+  // Ends output with last entry and newline character
+  outputFile << data[arraySize-1] << '\n';
 
-  // Ends output with newline character
-  outputFile << '\n';
-  
   // CLOSE
   outputFile.close();
 
