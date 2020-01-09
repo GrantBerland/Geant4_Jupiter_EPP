@@ -82,40 +82,43 @@ void PrimaryGeneratorAction::GenerateParticles(ParticleSample* r)
 
   // Random uniform sampling on a circular area
   //r->xPos = diskRadius * std::sqrt(radialPosition) * std::cos(theta);
-  r->xPos = 0.;
-  r->yPos = 0.;
   //r->yPos = diskRadius * std::sqrt(radialPosition) * std::sin(theta);
+  // TMP
+  r->xPos = 0;
+  r->yPos = 0;
   r->zPos = 500.*km;
 
   // Particle attribute RV's
   // Starts electrons with gyromotion about field line
-  /*
-  G4double pitchAngle = G4UniformRand() * 3.1415926;
+  G4double maxPitchAngle = 20.;   // deg
+  
+  // Angular RV's
   G4double gyroPhase  = G4UniformRand() * 2. * 3.1415926;
-  gyroPhase = 3.1415926 / 2.;
-  // test
-  pitchAngle = 3.1415926 / 8.; // rad
-  r->xDir = -std::sin(pitchAngle) * std::sin(gyroPhase) / std::sqrt(2);
-  r->yDir =  std::sin(pitchAngle) * std::cos(gyroPhase) / std::sqrt(2);
-  r->zDir = -1/std::sqrt(2);//-std::cos(pitchAngle);
-  */
-  G4double phi = G4UniformRand() * 2. * 3.1415926;
-  r->xDir = -std::sin(phi) / std::sqrt(2);
-  r->yDir =  std::cos(phi) / std::sqrt(2);
-  r->zDir = -1 / std::sqrt(2);
+  G4double pitchAngle = (G4UniformRand()*2.-1.) * maxPitchAngle 
+	                            * 3.1415926 / 180.; 
+  
+  // Initial momentum direction of particles
+  r->xDir = std::sin(pitchAngle)*std::cos(gyroPhase);
+  r->yDir = std::sin(pitchAngle)*std::sin(gyroPhase);
+  r->zDir = -std::cos(pitchAngle);
 
   
   std::cout << "dir = (" << r->xDir << ',' << r->yDir << ',' 
 	  << r->zDir << ")" << std::endl; 
 
+  // Energy distribution types
+  // 0 - exponential with folding energy fE0
+  // 1 - monoenergetic with energy fE0
   switch(fDistType) // set by PrimaryMessenger
   {
     case(0): // Exponential energy distribution with folding energy fE0
       r->energy = -fE0 * std::log(1 - G4UniformRand()) * keV;
       break;
-    case(1): // Monoenergetic beam with energy fE0
+
+    case(1): // Monoenergetic with energy fE0
       r->energy = fE0 * keV;
       break;
+   
     default:
      throw std::invalid_argument("Need to enter an energy distribution!");
   }  
@@ -123,18 +126,27 @@ void PrimaryGeneratorAction::GenerateParticles(ParticleSample* r)
 
 void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 {
-
+  // Struct to store particle initial properties: 
+  // position           - (x, y, z) [km]
+  // momentum direction - (px, py, pz) []
+  // energy 		- E [keV]
   ParticleSample* r = new ParticleSample();
-  
+ 
+  // Generator method to fill ParticleSample struct
   GenerateParticles(r);
 
   fParticleGun->SetParticlePosition(
 		  G4ThreeVector(r->xPos, r->yPos, r->zPos)); 
+  
   fParticleGun->SetParticleMomentumDirection(
 		  G4ThreeVector(r->xDir, r->yDir, r->zDir));
+  
   fParticleGun->SetParticleEnergy(r->energy);
+  
+  // Geant method to create initial particle with the above properties 
   fParticleGun->GeneratePrimaryVertex(anEvent);
 
+  // Free memory from ParticleSample struct
   delete r;
 }
 

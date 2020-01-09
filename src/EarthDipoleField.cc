@@ -2,6 +2,19 @@
 
 #include "EarthDipoleField.hh"
 
+/* The following class calculates the Earth's magnetic field strength 
+ * and direction according to a tilted dipole model. This class inherits
+ * from G4MagneticField. GetFieldValue() is a Geant virtual method that 
+ * is called to obtain magnetic and electric field values for particle 
+ * propagation purposes.
+ * 
+ * Future work: 
+ *  - implement IGRF magnetic field (and others)
+ * 
+ * Grant Berland
+ */
+
+
 EarthDipoleField::EarthDipoleField()
 : G4MagneticField(),
   fDipoleMoment(8.05e6),    // Tesla-km^3
@@ -28,21 +41,21 @@ void EarthDipoleField::GetFieldValue(const G4double Point[4],
   // center of simulation volume
   G4double z = fEarthRadius + (Point[2]/km + 1020./2.);  // km
 
+  // Magnitude of B-field, units assigned here
   G4double B_magnitude = fDipoleMoment / std::pow(z, 3) * tesla; // T
 
-
+  // Bfield[0] ~ West direction
+  // Bfield[1] ~ North direction
+  // Bfield[2] ~ Up direction, or radially out from Earth 
   Bfield[0] = 0; // Bx
   Bfield[1] = B_magnitude * std::cos(geomagLat_radians);       // By
-  //Bfield[1] = 0;      // By
   Bfield[2] = B_magnitude * -2. * std::sin(geomagLat_radians); // Bz
-  //Bfield[2] = B_magnitude * std::sqrt(1 + 
-  //		  3 * std::pow(std::sin(geomagLat_radians), 2)); // Bz
-  
   Bfield[3] = 0; // Ex
   Bfield[4] = 0; // Ey
   Bfield[5] = 0; // Ez
 
-  //std::cout << Bfield[2]/tesla << std::endl;
+  // Debugging print statement
+  //std::cout << "Bz = " << Bfield[2]/tesla*1e6 << " nT" << std::endl;
 }
 
 
