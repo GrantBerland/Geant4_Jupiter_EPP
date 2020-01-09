@@ -56,11 +56,6 @@ RunAction::RunAction()
 
   fRunActionMessenger     = new RunActionMessenger(this); 
 
-  fPhotonEnergyVector     = new std::vector<G4double>();
-  fPhotonAltitudeVector   = new std::vector<G4double>();
-  fElectronEnergyVector   = new std::vector<G4double>();
-  fElectronAltitudeVector = new std::vector<G4double>();
-
   fEnergyHist             = new myHistogram();
 }
 
@@ -68,10 +63,6 @@ RunAction::RunAction()
 
 RunAction::~RunAction()
 {
-  delete fPhotonEnergyVector;
-  delete fPhotonAltitudeVector;
-  delete fElectronEnergyVector;
-  delete fElectronAltitudeVector;
   delete fEnergyHist;
 }
 
@@ -84,38 +75,6 @@ void RunAction::BeginOfRunAction(const G4Run*)
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 void RunAction::EndOfRunAction(const G4Run*)
 {
-/*
-  std::ofstream outputFile;
-  // Write photon energies to file 
-  if(!fPhotonEnergyVector->empty())
-  {
-    outputFile.open("results.txt", std::ios_base::app);
-
-    // Photon data
-    for (unsigned int i=0;i<fPhotonEnergyVector->size(); i++) 
-    {
-      outputFile << (*fPhotonAltitudeVector)[i] << ","
-	          << (*fPhotonEnergyVector)[i] << ",g" << "\n";
-    }
-    outputFile.close();
-    fPhotonAltitudeVector->clear(); 
-    fPhotonEnergyVector->clear();
-  }
-  if(!fElectronEnergyVector->empty())
-  {
-    outputFile.open("results.txt", std::ios_base::app);
-    
-    // Electron data
-    for (unsigned int i=0;i<fElectronEnergyVector->size(); i++) 
-    {
-      outputFile << (*fElectronAltitudeVector)[i] << ","
-	          << (*fElectronEnergyVector)[i] << ",e" <<"\n";
-    }
-    outputFile.close();
-    fElectronAltitudeVector->clear();
-    fElectronEnergyVector->clear(); 
-  }
-  */
   
   std::cout << "Writing results to histogram...";
   fEnergyHist->WriteHistogramToFile(fHistogramFileName);

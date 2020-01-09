@@ -81,11 +81,11 @@ void PrimaryGeneratorAction::GenerateParticles(ParticleSample* r)
   G4double diskRadius = 400.*km;
 
   // Random uniform sampling on a circular area
-  //r->xPos = diskRadius * std::sqrt(radialPosition) * std::cos(theta);
-  //r->yPos = diskRadius * std::sqrt(radialPosition) * std::sin(theta);
+  r->xPos = diskRadius * std::sqrt(radialPosition) * std::cos(theta);
+  r->yPos = diskRadius * std::sqrt(radialPosition) * std::sin(theta);
   // TMP
-  r->xPos = 0;
-  r->yPos = 0;
+  //r->xPos = 0;
+  //r->yPos = 0;
   r->zPos = 500.*km;
 
   // Particle attribute RV's
@@ -96,15 +96,18 @@ void PrimaryGeneratorAction::GenerateParticles(ParticleSample* r)
   G4double gyroPhase  = G4UniformRand() * 2. * 3.1415926;
   G4double pitchAngle = (G4UniformRand()*2.-1.) * maxPitchAngle 
 	                            * 3.1415926 / 180.; 
+
+  // Loss cone at 1000 km : 49.4 deg
+  // Loss cone at 300 km  : 61.45 deg
+  
+  // Sine distribution inverse CDF sampling
+  // phi on [0, pi]
+  pitchAngle = std::acos(G4UniformRand()*2.-1.)/3.141592654/0.8;
   
   // Initial momentum direction of particles
   r->xDir = std::sin(pitchAngle)*std::cos(gyroPhase);
   r->yDir = std::sin(pitchAngle)*std::sin(gyroPhase);
   r->zDir = -std::cos(pitchAngle);
-
-  
-  std::cout << "dir = (" << r->xDir << ',' << r->yDir << ',' 
-	  << r->zDir << ")" << std::endl; 
 
   // Energy distribution types
   // 0 - exponential with folding energy fE0

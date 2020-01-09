@@ -310,6 +310,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
      // test material
      //layerMaterial = low_density_material;
+     
      layerMaterial = new G4Material("AirLayer"+std::to_string(i),  // name
 		     totalAtmosMass*g/cm3, // density
 		     nComponents,                // number of components
@@ -361,6 +362,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
      layerMaterial->AddElement(N, // material, mass fraction
 		     msisAtmosTable[i][9]/totalAtmosMass); 
      }
+
      logicLayer = new G4LogicalVolume(atmosphereLayer,
 		                   layerMaterial,
 				   "AtmosphereLayer"+std::to_string(i));

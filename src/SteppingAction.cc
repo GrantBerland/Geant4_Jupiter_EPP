@@ -135,6 +135,23 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
 				sizeof(pos_array)/sizeof(*pos_array));
       
       }
+      if(particleName == "gamma")
+      {
+
+        const G4double partEnergy = 
+		step->GetPreStepPoint()->GetKineticEnergy();	
+        G4ThreeVector position = track->GetPosition();
+        G4double pos_array[4] = { position.x()/m, 
+	      		          position.y()/m, 
+			          position.z()/m,
+				  partEnergy/keV};
+        // Writes 3D position vector to results file
+	// owned by RunAction
+        fRunAction->fEnergyHist->WriteDirectlyToFile("photon_part_traj.txt", 
+			                             pos_array,
+				sizeof(pos_array)/sizeof(*pos_array));
+      
+      }
       break;
     
     default: 

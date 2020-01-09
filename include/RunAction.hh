@@ -64,11 +64,6 @@ class RunAction : public G4UserRunAction
     virtual void BeginOfRunAction(const G4Run*);
     virtual void   EndOfRunAction(const G4Run*);
 
-    inline void AddPhotonEnergy(G4double ene);
-    inline void AddPhotonAltitude(G4double alt);
-    inline void AddElectronEnergy(G4double ene);
-    inline void AddElectronAltitude(G4double alt);
-
     void SetHistFileName(G4String name){fHistogramFileName=name;};
 
   public:
@@ -76,32 +71,8 @@ class RunAction : public G4UserRunAction
   private:
     RunActionMessenger*    fRunActionMessenger;
     G4String 		   fHistogramFileName;
-    std::vector<G4double> *fPhotonEnergyVector;
-    std::vector<G4double> *fPhotonAltitudeVector;
-    std::vector<G4double> *fElectronEnergyVector;
-    std::vector<G4double> *fElectronAltitudeVector;
     
 };
 
-// TODO: make this 1 or 2 methods with particle type selection, etc.
-inline void RunAction::AddPhotonEnergy(G4double ene)
-{
-  fPhotonEnergyVector->push_back(ene);
-}
-
-inline void RunAction::AddPhotonAltitude(G4double alt)
-{
-  fPhotonAltitudeVector->push_back(alt);
-}
-
-inline void RunAction::AddElectronAltitude(G4double alt)
-{
-  fElectronAltitudeVector->push_back(alt);
-}
-
-inline void RunAction::AddElectronEnergy(G4double ene)
-{
-  fElectronEnergyVector->push_back(ene);
-}
 
 #endif
