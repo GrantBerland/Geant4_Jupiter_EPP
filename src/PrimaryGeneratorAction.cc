@@ -127,6 +127,12 @@ void PrimaryGeneratorAction::GenerateParticles(ParticleSample* r)
       pitchAngle = G4UniformRand() * maxPitchAngle;
       break;
 
+    case(3):
+      // Single pitch angle selection
+      // pitch angle = maxPitchAngle
+      pitchAngle = maxPitchAngle;
+      break;
+    
     default:
       throw std::invalid_argument("Select a pitch angle distribution");
   }

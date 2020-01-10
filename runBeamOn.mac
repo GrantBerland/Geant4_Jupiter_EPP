@@ -27,7 +27,7 @@
 /tracking/verbose 0
 
 # 0 - energy deposition per altitude (histogram)
-# 1 - particle trajectory (x, y, z, E)
+# 1 - particle trajectory (x, y, z, E) (warning, lots of data!!!)
 /dataCollection/setDataCollection 0 
 
 # Set file name for histogram or results file
@@ -44,14 +44,13 @@
 /energy/particleStartingAltitude 1000.  # [km]
 
 # 0 = sin(x) distribution
-# 1 = sin(2x)distribution
+# 1 = sin(2x) distribution
 # 2 = isotropic PAD
+# 3 = all particles have pitch angle = maximum pitch angle, set above
 /energy/setPitchAngleDistributionType 0 
 
-# Either exponential folding energy or monoenergetic beam energy
+# Either exponential folding energy or monoenergetic energy
 /energy/setFoldingEnergy 5000 # [keV]
 
 # Number of particles to run 
-# (breaking it up prevents results vector from getting too large
-# by writing to file at the end of every run)
 /run/beamOn 1
