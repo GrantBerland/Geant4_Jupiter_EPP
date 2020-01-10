@@ -49,7 +49,8 @@ PrimaryGeneratorAction::PrimaryGeneratorAction()
 : G4VUserPrimaryGeneratorAction(),
   fParticleGun(0),
   fPrimaryMessenger(0),
-  fDistType(0),
+  fEnergyDistType(0),
+  fPitchAngleDistType(0),
   fE0(0.)
 {
   fParticleGun  = new G4ParticleGun();
@@ -90,7 +91,7 @@ void PrimaryGeneratorAction::GenerateParticles(ParticleSample* r)
 
   // Particle attribute RV's
   // Starts electrons with gyromotion about field line
-  G4double maxPitchAngle = 20.;   // deg
+  G4double maxPitchAngle = 50. * 3.1415926 / 180.;   // rad
   
   // Angular RV's
   G4double gyroPhase  = G4UniformRand() * 2. * 3.1415926;
@@ -100,10 +101,20 @@ void PrimaryGeneratorAction::GenerateParticles(ParticleSample* r)
   // Loss cone at 1000 km : 49.4 deg
   // Loss cone at 300 km  : 61.45 deg
   
-  // Sine distribution inverse CDF sampling
-  // phi on [0, pi]
-  pitchAngle = std::acos(G4UniformRand()*2.-1.)/3.141592654/0.8;
+  switch(fPitchAngleDistType)
+  {
   
+    case(0): 
+      // Sine distribution inverse CDF sampling
+      // phi between [0, maxPitchAngle]
+      pitchAngle = std::acos(G4UniformRand()*2.-1.)
+	      /3.141592654/maxPitchAngle;
+     break;
+    
+    default:
+     throw std::invalid_argument("Select a pitch angle distribution")
+  }
+
   // Initial momentum direction of particles
   r->xDir = std::sin(pitchAngle)*std::cos(gyroPhase);
   r->yDir = std::sin(pitchAngle)*std::sin(gyroPhase);
@@ -112,7 +123,7 @@ void PrimaryGeneratorAction::GenerateParticles(ParticleSample* r)
   // Energy distribution types
   // 0 - exponential with folding energy fE0
   // 1 - monoenergetic with energy fE0
-  switch(fDistType) // set by PrimaryMessenger
+  switch(fEnergyDistType) // set by PrimaryMessenger
   {
     case(0): // Exponential energy distribution with folding energy fE0
       r->energy = -fE0 * std::log(1 - G4UniformRand()) * keV;

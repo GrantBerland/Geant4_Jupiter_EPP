@@ -63,8 +63,11 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
     virtual void GeneratePrimaries(G4Event*);         
 
     void GenerateParticles(ParticleSample*);
+    
+    // Messenger methods
     void SetEnergy(G4double E0){ fE0 = E0;};
-    void SetDistribution(G4int se){ fDistType = se; };
+    void SetEnergyDistribution(G4int se){ fEnergyDistType = se; };
+    void SetPitchAngleDistribution(G4int pad){fPitchAngleDistType = pad;};
     
     // method to access particle gun
     const G4ParticleGun* GetParticleGun() const { return fParticleGun; }
@@ -72,7 +75,8 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
   private:
     G4ParticleGun*  fParticleGun; // pointer a to G4 gun class
     PrimaryGeneratorMessenger* fPrimaryMessenger;
-    G4int           fDistType;
+    G4int           fEnergyDistType;
+    G4int 	    fPitchAngleDistType;
     G4double        fE0;
 };
 
