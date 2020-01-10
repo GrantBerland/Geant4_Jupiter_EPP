@@ -29,7 +29,16 @@ PrimaryGeneratorMessenger::PrimaryGeneratorMessenger(PrimaryGeneratorAction* pri
   fDcmd->SetParameterName("Folding or Mono Energy [keV]",true);
   fDcmd->SetDefaultValue(100.);
   fDcmd->AvailableForStates(G4State_PreInit, G4State_Idle);
+  
+  fDcmd2 = new G4UIcmdWithADouble("/energy/setMaximumPitchAngle",this);
+  fDcmd2->SetParameterName("Maximum pitch angle used in distributions [deg]",true);
+  fDcmd2->SetDefaultValue(50.);
+  fDcmd2->AvailableForStates(G4State_PreInit, G4State_Idle);
 
+  fDcmd3 = new G4UIcmdWithADouble("/energy/particleStartingAltitude",this);
+  fDcmd3->SetParameterName("Particle initial altitude [km]",true);
+  fDcmd3->SetDefaultValue(1000.);
+  fDcmd3->AvailableForStates(G4State_PreInit, G4State_Idle);
 }
 
 PrimaryGeneratorMessenger::~PrimaryGeneratorMessenger()
@@ -38,6 +47,8 @@ PrimaryGeneratorMessenger::~PrimaryGeneratorMessenger()
   delete fcmd;
   delete fcmd2;
   delete fDcmd;
+  delete fDcmd2;
+  delete fDcmd3;
 }
 void PrimaryGeneratorMessenger::SetNewValue(G4UIcommand* command, 
 					    G4String newValue)
@@ -53,6 +64,14 @@ void PrimaryGeneratorMessenger::SetNewValue(G4UIcommand* command,
 
   if(command == fDcmd){
     fPrimaryGenerator->SetEnergy(std::stod(newValue));
+  }
+  
+  if(command == fDcmd2){
+    fPrimaryGenerator->SetMaxPitchAngle(std::stod(newValue));
+  }
+  
+  if(command == fDcmd3){
+    fPrimaryGenerator->SetPartInitialAlt(std::stod(newValue));
   }
 
 }

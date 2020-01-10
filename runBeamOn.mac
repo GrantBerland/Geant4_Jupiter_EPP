@@ -37,7 +37,15 @@
 # 1 = monoenergetic
 /energy/setEnergyDistributionType 0 
 
-# 0 = sine distribution
+# Loss cone at 1000 km: 49.4 deg
+# Loss cone at 300 km: 61.45 deg
+/energy/setMaximumPitchAngle 50.  # [deg]
+
+/energy/particleStartingAltitude 1000.  # [km]
+
+# 0 = sin(x) distribution
+# 1 = sin(2x)distribution
+# 2 = isotropic PAD
 /energy/setPitchAngleDistributionType 0 
 
 # Either exponential folding energy or monoenergetic beam energy

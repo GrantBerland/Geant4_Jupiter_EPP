@@ -51,7 +51,9 @@ PrimaryGeneratorAction::PrimaryGeneratorAction()
   fPrimaryMessenger(0),
   fEnergyDistType(0),
   fPitchAngleDistType(0),
-  fE0(0.)
+  fE0(0.),
+  fMaxPitchAngle(0.),
+  fInitialParticleAlt(0.)
 {
   fParticleGun  = new G4ParticleGun();
   
@@ -87,11 +89,12 @@ void PrimaryGeneratorAction::GenerateParticles(ParticleSample* r)
   // TMP
   //r->xPos = 0;
   //r->yPos = 0;
-  r->zPos = 500.*km;
+  // 0.5x due to coordinate axis location in middle of volume
+  r->zPos = (fInitialParticleAlt/2.)*km;
 
   // Particle attribute RV's
   // Starts electrons with gyromotion about field line
-  G4double maxPitchAngle = 50. * 3.1415926 / 180.;   // rad
+  G4double maxPitchAngle = fMaxPitchAngle * 3.1415926 / 180.;   // rad
   
   // Angular RV's
   G4double gyroPhase  = G4UniformRand() * 2. * 3.1415926;
@@ -106,13 +109,26 @@ void PrimaryGeneratorAction::GenerateParticles(ParticleSample* r)
   
     case(0): 
       // Sine distribution inverse CDF sampling
-      // phi between [0, maxPitchAngle]
+      // pitch angle ~ sine[0, maxPitchAngle]
       pitchAngle = std::acos(G4UniformRand()*2.-1.)
 	      /3.141592654/maxPitchAngle;
-     break;
-    
+      break;
+   
+    case(1):
+      // Sine(2x) distribution inverse CDF sampling
+      // pitch angle ~ sine[0, maxPitchAngle/2]
+      pitchAngle = std::acos(G4UniformRand()*2.-1.)
+	      /3.141592654/maxPitchAngle/2.;
+      break;
+
+    case(2):
+      // Isotropic distribution in pitch angle 
+      // pitch angle ~ U[0, maxPitchAngle]
+      pitchAngle = G4UniformRand() * maxPitchAngle;
+      break;
+
     default:
-     throw std::invalid_argument("Select a pitch angle distribution");
+      throw std::invalid_argument("Select a pitch angle distribution");
   }
 
   // Initial momentum direction of particles

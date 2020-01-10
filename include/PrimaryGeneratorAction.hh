@@ -68,7 +68,9 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
     void SetEnergy(G4double E0){ fE0 = E0;};
     void SetEnergyDistribution(G4int se){ fEnergyDistType = se; };
     void SetPitchAngleDistribution(G4int pad){fPitchAngleDistType = pad;};
-    
+    void SetMaxPitchAngle(G4double maxPA){ fMaxPitchAngle = maxPA; };
+    void SetPartInitialAlt(G4double alt){ fInitialParticleAlt = alt; };
+
     // method to access particle gun
     const G4ParticleGun* GetParticleGun() const { return fParticleGun; }
   
@@ -78,6 +80,8 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
     G4int           fEnergyDistType;
     G4int 	    fPitchAngleDistType;
     G4double        fE0;
+    G4double        fMaxPitchAngle;
+    G4double        fInitialParticleAlt;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
