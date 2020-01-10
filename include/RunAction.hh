@@ -67,7 +67,7 @@ class RunAction : public G4UserRunAction
     void SetHistFileName(G4String name){fHistogramFileName=name;};
 
   public:
-    myHistogram           *fEnergyHist;
+    myHistogram*           fEnergyHist;
   private:
     RunActionMessenger*    fRunActionMessenger;
     G4String 		   fHistogramFileName;

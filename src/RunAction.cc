@@ -55,7 +55,6 @@ RunAction::RunAction()
 {
 
   fRunActionMessenger     = new RunActionMessenger(this); 
-
   fEnergyHist             = new myHistogram();
 }
 

@@ -20,6 +20,8 @@ public:
   
   ~myHistogram();
 
+  // Tells program whether or not to write to histogram if other 
+  // data collections methods are selected
   void InitializeHistogram(){ initializedFlag = 1; };
   
   // Method to fill histogram with data
@@ -33,10 +35,11 @@ public:
 
 
 private:
-  
+  // Need to run InitializeHistogram() method to write particle energy 
+  // depostion to histogram
   int initializedFlag = 0;   
   
-  // Array initialized to zeros
+  // Array initialized to zeros (with fixed resolution :( )
   double histogramArray[1000] = {};
 };
 
@@ -56,7 +59,6 @@ inline void myHistogram::AddCountToBin(unsigned int binAddress,
 
 inline void myHistogram::WriteHistogramToFile(std::string filename)
 {
-  
   if(initializedFlag == 1)
   {
     std::ofstream outputFile;
@@ -77,7 +79,6 @@ inline void myHistogram::WriteHistogramToFile(std::string filename)
   {
     std::cout << "Histogram not initialized" << std::endl;
   }
-
 }
   
 inline void myHistogram::WriteDirectlyToFile(std::string filename, 
@@ -89,17 +90,17 @@ inline void myHistogram::WriteDirectlyToFile(std::string filename,
   // OPEN
   outputFile.open(filename, std::ios_base::app);
 
-  //data_length = 3; 
   // Writes entire line in 'data[]' to file, comma delimited
   for(unsigned int i=0; i<arraySize-1; i++)
   {
     outputFile << data[i] << ',';
   }
+  
   // Ends output with last entry and newline character
   outputFile << data[arraySize-1] << '\n';
 
   // CLOSE
   outputFile.close();
-
 }
+
 #endif

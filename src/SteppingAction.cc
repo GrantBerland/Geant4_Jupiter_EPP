@@ -101,18 +101,16 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
       	  G4ThreeVector position = track->GetPosition();
       	  G4double      alt      = position.z();
       
-      
-       	  std::cout << '\r'
-          << std::setw(2) << std::setfill('0')  
-          << std::setw(10) << "Altitude: "
-	  << std::setw(4) << (alt/km+1020.)  
-	  << std::setw(3) << " km" << std::flush; 
-      
           // Adds energy deposition to vector owned by RunAction, which is
           // written to a results file per simulation run
       	  G4int altitudeAddress = std::floor(1020./2. + alt/km);
-      	  fRunAction->fEnergyHist->AddCountToBin(altitudeAddress, 
+      	  
+	  if(altitudeAddress > 0 && altitudeAddress < 1000) 
+	  {
+	  
+	  fRunAction->fEnergyHist->AddCountToBin(altitudeAddress, 
 		      			    energyDep/keV);
+	  }
         }
     }
       break;
