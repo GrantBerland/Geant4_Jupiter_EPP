@@ -112,7 +112,7 @@ void PrimaryGeneratorAction::GenerateParticles(ParticleSample* r)
      break;
     
     default:
-     throw std::invalid_argument("Select a pitch angle distribution")
+     throw std::invalid_argument("Select a pitch angle distribution");
   }
 
   // Initial momentum direction of particles

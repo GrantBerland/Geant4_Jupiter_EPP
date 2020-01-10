@@ -26,16 +26,24 @@
 /event/verbose 0
 /tracking/verbose 0
 
-/dataCollection/setHistFileName energyHistogram_exp_300.txt
+# 0 - energy deposition per altitude (histogram)
+# 1 - particle trajectory (x, y, z, E)
+/dataCollection/setDataCollection 0 
+
+# Set file name for histogram or results file
+/dataCollection/setHistFileName energyHistogram.txt
 
 # 0 = exponential 
 # 1 = monoenergetic
-/energy/setDistributionType 0
+/energy/setEnergyDistributionType 0 
+
+# 0 = sine distribution
+/energy/setPitchAngleDistributionType 0 
 
 # Either exponential folding energy or monoenergetic beam energy
-/energy/setFoldingEnergy 300.  # [keV]
+/energy/setFoldingEnergy 5000 # [keV]
 
 # Number of particles to run 
 # (breaking it up prevents results vector from getting too large
 # by writing to file at the end of every run)
-/run/beamOn 300
+/run/beamOn 1
