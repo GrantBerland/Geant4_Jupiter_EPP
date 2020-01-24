@@ -52,9 +52,12 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     virtual G4VPhysicalVolume* Construct();
     virtual void ConstructSDandField();
 
+    G4int GetMSIStableSize(G4String);
+    void GetMSIStable(G4double(*)[10], G4String, G4int);
+  
   private:
+    G4int	     fTableSize;
     G4LogicalVolume* fLogicWorld;
-    const G4int      tableSize;
     G4Cache<F03FieldSetup*>    fEmFieldSetup;
 };
 
