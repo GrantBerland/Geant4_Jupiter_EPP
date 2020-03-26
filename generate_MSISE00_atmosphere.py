@@ -55,9 +55,9 @@ if len(sys.argv) > 1:
     fig = plt.figure();
     ax1 = fig.add_subplot(121)
     for var in atmos.species:
-        print(var)
-        atmos[var].plot(y='alt_km', label=var, ax=ax1)
-    plt.xscale('log'); plt.legend();
+        if var is not 'Total':
+            atmos[var].plot(y='alt_km', label=var, ax=ax1)
+    plt.xscale('log'); plt.legend(fontsize=8);
     plt.xlabel('Species number density [m$^{-3}$]')
     plt.ylabel('Altitude [km]');
     plt.title('Number Density Profile')
