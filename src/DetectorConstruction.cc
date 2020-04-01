@@ -107,21 +107,21 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   // msisAtmosTable contents:
   //
   // [0] - alt [km] 
-  // [1] - O 
-  // [2] - N2 
-  // [3] - O2 
-  // [4] - Total mass den [g/cm^3] 
+  // [1] - O   * 
+  // [2] - N2  *
+  // [3] - O2  *
+  // [4] - Total mass den [kg/m^3] 
   // [5] - Temp [K] 
-  // [6] - He 
-  // [7] - Ar 
-  // [8] - H 
-  // [9] - N
+  // [6] - He  *
+  // [7] - Ar  *
+  // [8] - H   *
+  // [9] - N   *
   //
-  // (all species' density in [g/cm^3])
-  
+  // * all species' mass density in [kg/m^3]
+
   fTableSize = GetMSIStableSize("../MSISE00_atmosphere.csv");
  
-  const G4int tableSize = fTableSize;
+  unsigned const int tableSize = fTableSize;
   G4double msisAtmosTable[tableSize][10];
  
   // Populate vector with MSIS atmosphere table
@@ -178,9 +178,9 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   for(int i=0; i<fTableSize; i++)
   {
      // Ideal gas law for atmospheric pressure
-     // P [Pa] = R [J/kg-K air] * (rho*1000)[kg/m^3] * T [K]
+     // P [Pa] = R [J/kg-K air] * rho [kg/m^3] * T [K]
      pressure = R_gas_constant_air * 
-	        (msisAtmosTable[i][2] * 1000.) * 
+	        (msisAtmosTable[i][2]) * 
 	         msisAtmosTable[i][4];
     
 
@@ -197,7 +197,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 	     nComponents++;
       	     totalAtmosMass += msisAtmosTable[i][2];
         diNitrogen = new G4Material("Dinitrogen-Layer"+std::to_string(i),
-		                    msisAtmosTable[i][2]*g/cm3,
+		                    msisAtmosTable[i][2]*kg/m3,
 				    1,
 				    kStateGas,
 				    msisAtmosTable[i][5]*kelvin,
@@ -210,7 +210,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 	     nComponents++;
       	     totalAtmosMass += msisAtmosTable[i][3];
              diOxygen = new G4Material("Dioxgyen-Layer"+std::to_string(i),
-		                    msisAtmosTable[i][3]*g/cm3,
+		                    msisAtmosTable[i][3]*kg/m3,
 				    1,
 				    kStateGas,
 				    msisAtmosTable[i][4]*kelvin,
@@ -241,8 +241,8 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
      // test material
      //layerMaterial = low_density_material;
      
-     layerMaterial = new G4Material("AirLayer"+std::to_string(i),  // name
-		     totalAtmosMass*g/cm3, // density
+     layerMaterial = new G4Material("AirLayer"+std::to_string(i), // name
+		     totalAtmosMass*kg/m3,       // density
 		     nComponents,                // number of components
 		     kStateGas,                  // state
 		     msisAtmosTable[i][4]*kelvin,// temperature
@@ -331,38 +331,45 @@ void DetectorConstruction::ConstructSDandField()
 
 void DetectorConstruction::GetMSIStable(G4double tableEntry[][10],
 					G4String filename,
-					G4int    tableSize)
+					unsigned int tableSize)
 {
   
   G4int counter_word = 0;
   std::ifstream filePtr;
-  std::string line, word;
+  std::string line;
 
   // OPEN
   filePtr.open(filename, std::ios::in);
 
   // Check that file is open/accesible, throw error if not
   if(!filePtr.is_open())
-  { G4String errorMessage = "Could not find file ";
+  { 
+    G4String errorMessage = "Could not open file ";
     errorMessage += filename;
     errorMessage += " !\n";
-    throw std::runtime_error(errorMessage);}
+    throw std::runtime_error(errorMessage);
+  }
 
 
   // Fill data array with data
-  for(G4int i=0; i<tableSize; i++)
+  for(unsigned int lineIndex=0; lineIndex<tableSize; lineIndex++)
   {
-    // gets line from file delimited by newline
-    getline(filePtr, line);
+    // Get line
+    filePtr >> line;
 
-    // stringstream pointer initialized per line from file
-    std::stringstream s_ptr(line);
-   
+    // Instantiate stringstream from line
+    std::stringstream s_ptr(line); 
+    
     counter_word = 0;
-    // gets word from line delimited by comma
-    while(getline(s_ptr, word, ','))
+    while(s_ptr.good())
     {
-      tableEntry[i][counter_word] = std::stod(word);
+      // Parse line into words delimited by commas
+      G4String word;
+      getline(s_ptr, word, ',');
+      
+      // Convert to double and assign table entry
+      tableEntry[lineIndex][counter_word] = std::stod(word);
+
       counter_word++;
     }
   }
@@ -386,7 +393,6 @@ G4int DetectorConstruction::GetMSIStableSize(G4String filename)
   filePtr.close();
 
   return counter;
-
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

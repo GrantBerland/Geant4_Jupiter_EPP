@@ -53,7 +53,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     virtual void ConstructSDandField();
 
     G4int GetMSIStableSize(G4String);
-    void GetMSIStable(G4double(*)[10], G4String, G4int);
+    void GetMSIStable(G4double(*)[10], G4String, unsigned int);
   
   private:
     G4int	     fTableSize;

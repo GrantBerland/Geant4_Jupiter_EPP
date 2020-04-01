@@ -6,6 +6,10 @@
 # the file correctly unless a single time, lat., and long. are chosen.
 # The script overwrites the profile every time it's called. 
 #
+# Units of atmospheric species are meters^-3, temperature in Kelvin, total
+# mass density in kilogram/meters^3, and altitude in kilometers. MASS 
+# DENSITIES are written to csv file in kilograms/meter^3.
+#
 # To call:
 #
 #   python generate_MSISE00_atmosphere.py arg1
@@ -39,6 +43,16 @@ g_lat_lon = [65. , -148.]
 ################################
 ################################
 
+# Atomic masses in kg
+mOxygen   = 2.6567e-26;
+mNitrogen = 2.3259e-26;
+mHelium   = 6.646477e-27;
+mArgon    = 6.6335e-26;
+mHydrogen = 1.674e-27;
+mOxygen2  = mOxygen * 2.;
+mNitrogen2= mNitrogen * 2.;
+
+
 # Construct altitude array
 altitudeArr = np.linspace(lowerAlt, 
                           upperAlt, 
@@ -53,7 +67,7 @@ atmos = msise00.run(time=time,
 if len(sys.argv) > 1: 
     import matplotlib.pyplot as plt
     fig = plt.figure();
-    ax1 = fig.add_subplot(121)
+    ax1 = fig.add_subplot(131)
     for var in atmos.species:
         if var is not 'Total':
             atmos[var].plot(y='alt_km', label=var, ax=ax1)
@@ -63,11 +77,19 @@ if len(sys.argv) > 1:
     plt.title('Number Density Profile')
     plt.grid();
 
-    ax2 = fig.add_subplot(122)
+    ax2 = fig.add_subplot(132)
     atmos['Tn'].plot(y='alt_km', ax=ax2);
     plt.xlabel('Neutral Temperature [K]')
     plt.ylabel('');
     plt.title('Neutral Temperature Profile')
+    plt.grid(); 
+    
+    ax3 = fig.add_subplot(133)
+    atmos['Total'].plot(y='alt_km', ax=ax3);
+    plt.xscale('log');
+    plt.xlabel(r'Total Mass Density [kg/m$^3$]')
+    plt.ylabel('');
+    plt.title('Density Profile')
     plt.grid(); 
    
     plt.suptitle('MSISe-00 Results: %s , %.1f$^\circ$N %.1f$^\circ$W' % (time,
@@ -77,6 +99,7 @@ if len(sys.argv) > 1:
 
 # Write order that I defined in Geant DetectorConstruction
 write_order = ['alt_km','O','N2','O2','Total','Tn','He','Ar','H','N']
+mass_mult   = [1, mOxygen, mNitrogen2, mOxygen2, 1, 1, mHelium, mArgon, mHydrogen, mNitrogen];
 
 # Write to atmosphere file
 with open('MSISE00_atmosphere.csv', 'w') as f:
@@ -89,11 +112,12 @@ with open('MSISE00_atmosphere.csv', 'w') as f:
                      lat=g_lat_lon[0],
                      lon=g_lat_lon[1])
         
-        for item in write_order:
+        for index, item in enumerate(write_order):
         
             if item != write_order[-1]:
-                f.write(str(line[item].data) + ',')
+                f.write(str(line[item].data * mass_mult[index]) + ',')
             else: # write last entry of line with newline instead of comma
-                f.write(str(line[item].data) + '\n')
+                f.write(str(line[item].data * mass_mult[index]) + '\n')
     
     # file closes when scope is left
+
