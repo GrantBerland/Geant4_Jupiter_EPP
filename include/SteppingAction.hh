@@ -55,6 +55,8 @@ class SteppingAction : public G4UserSteppingAction
 
     void SetDataCollection(G4int type){ fDataCollectionType = type; }; 
     
+    void LogEnergy(G4int, G4double);    
+    
     // method from the base class
     virtual void UserSteppingAction(const G4Step*);
 

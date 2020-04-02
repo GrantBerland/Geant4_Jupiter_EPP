@@ -42,6 +42,9 @@
 #include "SteppingActionMessenger.hh"
 #include "G4AutoLock.hh"
 
+// Initialize autolock for multiple threads writing into a single file
+namespace{ G4Mutex aMutex=G4MUTEX_INITIALIZER;} 
+
 SteppingAction::SteppingAction(EventAction* eventAction, RunAction* RuAct)
 : G4UserSteppingAction(),
   fEventAction(eventAction),
@@ -76,7 +79,6 @@ SteppingAction::SteppingAction(EventAction* eventAction, RunAction* RuAct)
 SteppingAction::~SteppingAction()
 {}
 
-namespace{G4Mutex aMutex=G4MUTEX_INITIALIZER;}
 
 void SteppingAction::UserSteppingAction(const G4Step* step)
 {
@@ -111,12 +113,9 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
       
 	  // Thread lock this so only one thread can deposit energy into
 	  // the histogram at a time. Unlocks when l goes out of scope.
-	  l.lock();
 	  if(altitudeAddress > 0 && altitudeAddress < 1000) 
 	  {
-	  
-	  fRunAction->fEnergyHist->AddCountToBin(altitudeAddress, 
-		      			    energyDep/keV);
+	    LogEnergy(altitudeAddress, energyDep/keV);
 	  }
         }
     }
@@ -164,6 +163,15 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
       break;
   
   }
+
+}
+
+void SteppingAction::LogEnergy(G4int histogramAddress, G4double energy)
+{
+
+  G4AutoLock lock(&aMutex);
+
+  fRunAction->fEnergyHist->AddCountToBin(histogramAddress, energy/keV);
 
 }
 
