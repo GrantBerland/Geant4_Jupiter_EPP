@@ -40,7 +40,7 @@
 #include "G4LogicalVolume.hh"
 #include "G4SystemOfUnits.hh"
 #include "SteppingActionMessenger.hh"
-//#include "G4AutoLock.hh"
+#include "G4AutoLock.hh"
 
 SteppingAction::SteppingAction(EventAction* eventAction, RunAction* RuAct)
 : G4UserSteppingAction(),
@@ -59,7 +59,7 @@ SteppingAction::SteppingAction(EventAction* eventAction, RunAction* RuAct)
     case(0):
       G4cout << "Energy deposition being recorded...";
       fRunAction->fEnergyHist->InitializeHistogram();
-      G4cout << "histogram initialized!" << G4endl;
+      G4cout << "Histogram initialized!" << G4endl;
       break;
     
     case(1):
@@ -67,7 +67,7 @@ SteppingAction::SteppingAction(EventAction* eventAction, RunAction* RuAct)
       break;
     
     default:
-      G4cout << "No data being recorded, exiting..." << G4endl; 
+      throw std::invalid_argument("No data being recorded, exiting...");
       break;
   }
 
@@ -76,8 +76,12 @@ SteppingAction::SteppingAction(EventAction* eventAction, RunAction* RuAct)
 SteppingAction::~SteppingAction()
 {}
 
+namespace{G4Mutex aMutex=G4MUTEX_INITIALIZER;}
+
 void SteppingAction::UserSteppingAction(const G4Step* step)
 {
+
+  G4AutoLock l(&aMutex);
 
   G4Track* track = step->GetTrack();
   G4String particleName = 
@@ -104,7 +108,10 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
           // Adds energy deposition to vector owned by RunAction, which is
           // written to a results file per simulation run
       	  G4int altitudeAddress = std::floor(1020./2. + alt/km);
-      	  
+      
+	  // Thread lock this so only one thread can deposit energy into
+	  // the histogram at a time. Unlocks when l goes out of scope.
+	  l.lock();
 	  if(altitudeAddress > 0 && altitudeAddress < 1000) 
 	  {
 	  

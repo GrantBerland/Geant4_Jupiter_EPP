@@ -46,13 +46,8 @@
 #include "G4PhysListFactory.hh"
 #include "G4StepLimiterPhysics.hh"
 
-#ifdef G4VIS_USE
 #include "G4VisExecutive.hh"
-#endif
-
-#ifdef G4UI_USE
 #include "G4UIExecutive.hh"
-#endif
 
 #include "G4SystemOfUnits.hh"
 #include "Randomize.hh"
@@ -86,7 +81,7 @@ int main(int argc,char** argv)
   G4Random::setTheSeeds(seeds);
 
   // Construct the default run manager
-#ifndef G4MULTITHREADED
+#ifdef G4MULTITHREADED
   G4MTRunManager* runManager = new G4MTRunManager;
   runManager->SetNumberOfThreads(2);  // (Grant's computer)
 #else

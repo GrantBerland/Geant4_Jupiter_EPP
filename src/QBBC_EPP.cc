@@ -53,7 +53,7 @@
 #include "G4EmExtraPhysics.hh"
 #include "G4StoppingPhysics.hh"
 
-#include "G4DataQuestionaire.hh"
+//#include "G4DataQuestionaire.hh"
 #include "G4HadronInelasticQBBC.hh"
 #include "G4HadronElasticPhysics.hh"
 #include "G4HadronElasticPhysicsXS.hh"
@@ -64,7 +64,7 @@
 
 QBBC_EPP::QBBC_EPP( G4int ver, const G4String&)
 {
-  G4DataQuestionaire it(photon, neutronxs);
+  //G4DataQuestionaire it(photon, neutronxs);
   G4cout << "<<< Reference Physics List QBBC "
 	 <<G4endl;	
 
