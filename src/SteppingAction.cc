@@ -43,7 +43,7 @@
 #include "G4AutoLock.hh"
 
 // Initialize autolock for multiple threads writing into a single file
-namespace{ G4Mutex aMutex=G4MUTEX_INITIALIZER;} 
+//namespace{ G4Mutex aMutex=G4MUTEX_INITIALIZER;} 
 
 SteppingAction::SteppingAction(EventAction* eventAction, RunAction* RuAct)
 : G4UserSteppingAction(),
@@ -82,8 +82,6 @@ SteppingAction::~SteppingAction()
 
 void SteppingAction::UserSteppingAction(const G4Step* step)
 {
-
-  G4AutoLock l(&aMutex);
 
   G4Track* track = step->GetTrack();
   G4String particleName = 
@@ -169,7 +167,7 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
 void SteppingAction::LogEnergy(G4int histogramAddress, G4double energy)
 {
 
-  G4AutoLock lock(&aMutex);
+  //G4AutoLock lock(&aMutex);
 
   fRunAction->fEnergyHist->AddCountToBin(histogramAddress, energy/keV);
 
