@@ -50,6 +50,7 @@
 #include "G4DecayPhysics.hh"
 #include "G4EmStandardPhysics.hh"
 #include "G4EmStandardPhysics_option2.hh"
+#include "G4EmLowEPPhysics.hh"
 #include "G4EmExtraPhysics.hh"
 #include "G4StoppingPhysics.hh"
 
@@ -74,6 +75,9 @@ QBBC_EPP::QBBC_EPP( G4int ver, const G4String&)
 
   // EM Physics
   RegisterPhysics( new G4EmStandardPhysics(ver) );
+  
+  // Low energy EM Physics
+  RegisterPhysics( new G4EmLowEPPhysics(ver) );
 
   // Synchroton Radiation & GN Physics
   RegisterPhysics( new G4EmExtraPhysics(ver) );
