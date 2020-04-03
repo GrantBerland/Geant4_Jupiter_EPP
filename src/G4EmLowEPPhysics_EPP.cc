@@ -122,7 +122,7 @@ G4EmLowEPPhysics::G4EmLowEPPhysics(G4int ver, const G4String&)
   param->SetDefaults();
   param->SetVerbose(verbose);
   param->SetMinEnergy(100*eV);
-  param->SetMaxEnergy(1*TeV);
+  param->SetMaxEnergy(1*GeV);
   // TODO: extend this energy lower in the future? 
   // need to check model lowest energy support
   param->SetLowestElectronEnergy(100*eV);
