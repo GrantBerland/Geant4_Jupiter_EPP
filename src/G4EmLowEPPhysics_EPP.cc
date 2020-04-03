@@ -25,7 +25,7 @@
 //
 // $Id: G4EmLowEPPhysics.cc 107183 2017-11-03 14:57:23Z gcosmo $
 
-#include "G4EmLowEPPhysics.hh"
+#include "G4EmLowEPPhysics_EPP.hh"
 #include "G4ParticleDefinition.hh"
 #include "G4SystemOfUnits.hh"
 #include "G4ParticleTable.hh"
@@ -60,11 +60,6 @@
 // e+
 #include "G4eplusAnnihilation.hh"
 
-// mu+-
-#include "G4MuMultipleScattering.hh"
-#include "G4MuIonisation.hh"
-#include "G4MuBremsstrahlung.hh"
-#include "G4MuPairProduction.hh"
 #include "G4SeltzerBergerModel.hh"
 
 // hadrons
@@ -100,10 +95,6 @@
 #include "G4Positron.hh"
 #include "G4MuonPlus.hh"
 #include "G4MuonMinus.hh"
-#include "G4PionPlus.hh"
-#include "G4PionMinus.hh"
-#include "G4KaonPlus.hh"
-#include "G4KaonMinus.hh"
 #include "G4Proton.hh"
 #include "G4AntiProton.hh"
 #include "G4Deuteron.hh"
@@ -132,6 +123,8 @@ G4EmLowEPPhysics::G4EmLowEPPhysics(G4int ver, const G4String&)
   param->SetVerbose(verbose);
   param->SetMinEnergy(100*eV);
   param->SetMaxEnergy(1*TeV);
+  // TODO: extend this energy lower in the future? 
+  // need to check model lowest energy support
   param->SetLowestElectronEnergy(100*eV);
   param->SetNumberOfBinsPerDecade(20);
   param->ActivateAngularGeneratorForIonisation(true);
@@ -158,12 +151,6 @@ void G4EmLowEPPhysics::ConstructParticle()
   G4MuonPlus::MuonPlus();
   G4MuonMinus::MuonMinus();
 
-  // mesons
-  G4PionPlus::PionPlusDefinition();
-  G4PionMinus::PionMinusDefinition();
-  G4KaonPlus::KaonPlusDefinition();
-  G4KaonMinus::KaonMinusDefinition();
-
   // baryons
   G4Proton::Proton();
   G4AntiProton::AntiProton();
@@ -183,8 +170,6 @@ void G4EmLowEPPhysics::ConstructProcess()
   G4PhysicsListHelper* ph = G4PhysicsListHelper::GetPhysicsListHelper();
 
   // muon & hadron bremsstrahlung and pair production
-  G4MuBremsstrahlung* mub = new G4MuBremsstrahlung();
-  G4MuPairProduction* mup = new G4MuPairProduction();
   G4hBremsstrahlung* pib = new G4hBremsstrahlung();
   G4hPairProduction* pip = new G4hPairProduction();
   G4hBremsstrahlung* kb = new G4hBremsstrahlung();
@@ -193,10 +178,6 @@ void G4EmLowEPPhysics::ConstructProcess()
   G4hPairProduction* pp = new G4hPairProduction();
 
   // muon & hadron multiple scattering
-  G4MuMultipleScattering* mumsc = new G4MuMultipleScattering();
-  mumsc->SetEmModel(new G4LowEWentzelVIModel());
-  G4hMultipleScattering* pimsc = new G4hMultipleScattering();
-  pimsc->SetEmModel(new G4LowEWentzelVIModel());
   G4hMultipleScattering* kmsc = new G4hMultipleScattering();
   kmsc->SetEmModel(new G4LowEWentzelVIModel());
 
@@ -286,17 +267,6 @@ void G4EmLowEPPhysics::ConstructProcess()
       ph->RegisterProcess(eBrem, particle);
       ph->RegisterProcess(new G4eplusAnnihilation(), particle);
 
-    } else if (particleName == "mu+" ||
-               particleName == "mu-"    ) {
-
-      G4MuIonisation* muIoni = new G4MuIonisation();
-      muIoni->SetStepFunction(0.2, 50*um);          
-
-      ph->RegisterProcess(mumsc, particle);
-      ph->RegisterProcess(muIoni, particle);
-      ph->RegisterProcess(mub, particle);
-      ph->RegisterProcess(mup, particle);
-
     } else if (particleName == "alpha" ||
                particleName == "He3" ) {
       
@@ -316,28 +286,6 @@ void G4EmLowEPPhysics::ConstructProcess()
       ph->RegisterProcess(hmsc, particle);
       ph->RegisterProcess(ionIoni, particle);
       ph->RegisterProcess(ionnuc, particle);
-
-    } else if (particleName == "pi+" ||
-               particleName == "pi-" ) {
-
-      G4hIonisation* hIoni = new G4hIonisation();
-      hIoni->SetStepFunction(0.2, 50*um);
-
-      ph->RegisterProcess(pimsc, particle);
-      ph->RegisterProcess(hIoni, particle);
-      ph->RegisterProcess(pib, particle);
-      ph->RegisterProcess(pip, particle);
-
-    } else if (particleName == "kaon+" ||
-               particleName == "kaon-" ) {
-
-      G4hIonisation* hIoni = new G4hIonisation();
-      hIoni->SetStepFunction(0.2, 50*um);
-
-      ph->RegisterProcess(kmsc, particle);
-      ph->RegisterProcess(hIoni, particle);
-      ph->RegisterProcess(kb, particle);
-      ph->RegisterProcess(kp, particle);
 
     } else if (particleName == "proton" ||
 	       particleName == "anti_proton") {
