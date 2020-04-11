@@ -78,12 +78,12 @@ SteppingAction::~SteppingAction()
   delete fSteppingMessenger;
 }
 
-namespace{G4Mutex aMutex=G4MUTEX_INITIALIZER;}
+//namespace{G4Mutex aMutex=G4MUTEX_INITIALIZER;}
 
 void SteppingAction::UserSteppingAction(const G4Step* step)
 {
 
-  G4AutoLock l(&aMutex);
+  //G4AutoLock l(&aMutex);
 
   G4Track* track = step->GetTrack();
   G4String particleName = 
@@ -113,7 +113,7 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
       
 	  // Thread lock this so only one thread can deposit energy into
 	  // the histogram at a time. Unlocks when l goes out of scope.
-	  l.lock();
+	  //l.lock();
 	  if(altitudeAddress > 0 && altitudeAddress < 1000) 
 	  {
 	  
