@@ -35,14 +35,14 @@
 /dataCollection/setDataCollection 0 
 
 # Set file name for histogram or results file
-/dataCollection/setHistFileName energyHistogram.txt
+/dataCollection/setHistFileName energyHistogram_test2.txt
 
 # 0 = sin(x) distribution
 # 1 = sin(2x) distribution
 # 2 = isotropic PAD
 # 3 = all particles have pitch angle = maximum pitch angle, set above
 # 4 = particle pitch angles are read in from pitchAngleFile.csv in [deg]
-/energy/setPitchAngleDistributionType 4 
+/energy/setPitchAngleDistributionType 2 
 
 # Loss cone at 1000 km: 49.4 deg
 # Loss cone at 300 km: 61.45 deg
@@ -54,10 +54,10 @@
 # 0 = exponential 
 # 1 = monoenergetic
 # 2 = energies are read in from energyFile.csv in [keV]
-/energy/setEnergyDistributionType 2 
+/energy/setEnergyDistributionType 0 
 
 # Either exponential folding energy or monoenergetic energy
 /energy/setFoldingEnergy 5000. # [keV]
 
 # Number of particles to run 
-/run/beamOn 10
+/run/beamOn 10000

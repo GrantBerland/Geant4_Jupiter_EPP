@@ -81,19 +81,13 @@ SteppingAction::~SteppingAction()
   delete fSteppingMessenger;
 }
 
-<<<<<<< HEAD
-=======
 //namespace{G4Mutex aMutex=G4MUTEX_INITIALIZER;}
->>>>>>> polynomial-chaos
 
 void SteppingAction::UserSteppingAction(const G4Step* step)
 {
 
-<<<<<<< HEAD
-=======
   //G4AutoLock l(&aMutex);
 
->>>>>>> polynomial-chaos
   G4Track* track = step->GetTrack();
   G4String particleName = 
 	  track->GetDynamicParticle()->GetDefinition()->GetParticleName();
@@ -122,10 +116,7 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
       
 	  // Thread lock this so only one thread can deposit energy into
 	  // the histogram at a time. Unlocks when l goes out of scope.
-<<<<<<< HEAD
-=======
 	  //l.lock();
->>>>>>> polynomial-chaos
 	  if(altitudeAddress > 0 && altitudeAddress < 1000) 
 	  {
 	    LogEnergy(altitudeAddress, energyDep/keV);
