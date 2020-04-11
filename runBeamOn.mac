@@ -18,6 +18,10 @@
 
 
 #/cuts/setMaxCutEnergy 50 eV
+
+# Set file name for atmosphere table
+/dataCollection/setAtmosFileName MSISE00_atmosphere.csv
+
 /run/initialize
 
 
@@ -33,24 +37,27 @@
 # Set file name for histogram or results file
 /dataCollection/setHistFileName energyHistogram.txt
 
-# 0 = exponential 
-# 1 = monoenergetic
-/energy/setEnergyDistributionType 0 
+# 0 = sin(x) distribution
+# 1 = sin(2x) distribution
+# 2 = isotropic PAD
+# 3 = all particles have pitch angle = maximum pitch angle, set above
+# 4 = particle pitch angles are read in from pitchAngleFile.csv in [deg]
+/energy/setPitchAngleDistributionType 4 
 
 # Loss cone at 1000 km: 49.4 deg
 # Loss cone at 300 km: 61.45 deg
 /energy/setMaximumPitchAngle 50.  # [deg]
 
-/energy/particleStartingAltitude 1000.  # [km]
+/energy/particleStartingAltitude 300.  # [km]
 
-# 0 = sin(x) distribution
-# 1 = sin(2x) distribution
-# 2 = isotropic PAD
-# 3 = all particles have pitch angle = maximum pitch angle, set above
-/energy/setPitchAngleDistributionType 0 
+
+# 0 = exponential 
+# 1 = monoenergetic
+# 2 = energies are read in from energyFile.csv in [keV]
+/energy/setEnergyDistributionType 2 
 
 # Either exponential folding energy or monoenergetic energy
-/energy/setFoldingEnergy 5000 # [keV]
+/energy/setFoldingEnergy 5000. # [keV]
 
 # Number of particles to run 
-/run/beamOn 1
+/run/beamOn 10

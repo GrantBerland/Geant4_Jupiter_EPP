@@ -41,8 +41,9 @@ class G4LogicalVolume;
 class G4UniformMagField;
 class F03FieldSetup;
 
-/// Detector construction class to define materials and geometry.
+class DetectorMessenger;
 
+// Detector construction class to define materials and geometry.
 class DetectorConstruction : public G4VUserDetectorConstruction
 {
   public:
@@ -52,13 +53,19 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     virtual G4VPhysicalVolume* Construct();
     virtual void ConstructSDandField();
 
+    void SetAtmosFilename(G4String name){fAtmosphereFilename = name;};
+
     G4int GetMSIStableSize(G4String);
     void GetMSIStable(G4double(*)[10], G4String, unsigned int);
-  
+
+  public:
+    G4String           fAtmosphereFilename;
   private:
-    G4int	     fTableSize;
-    G4LogicalVolume* fLogicWorld;
+    DetectorMessenger* fDetectorMessenger;
+    G4int	       fTableSize;
+    G4LogicalVolume*   fLogicWorld;
     G4Cache<F03FieldSetup*>    fEmFieldSetup;
+
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

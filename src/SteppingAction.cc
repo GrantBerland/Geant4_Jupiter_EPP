@@ -74,7 +74,9 @@ SteppingAction::SteppingAction(EventAction* eventAction, RunAction* RuAct)
 }
 
 SteppingAction::~SteppingAction()
-{}
+{
+  delete fSteppingMessenger;
+}
 
 namespace{G4Mutex aMutex=G4MUTEX_INITIALIZER;}
 
@@ -92,7 +94,7 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
     
     case(0):  // Collects energy deposition per altitude
   
-      if(particleName == "e-")
+      if(particleName == "e-" || particleName == "gamma")
       {
 
     	// Gets energy delta of particle over step length

@@ -45,18 +45,26 @@
 #include "G4AutoDelete.hh"
 #include "G4SDManager.hh"
 
+#include "DetectorMessenger.hh"
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 DetectorConstruction::DetectorConstruction()
 : G4VUserDetectorConstruction(),
+  fAtmosphereFilename("MSISE00_atmosphere.csv"),
+  fDetectorMessenger(),
   fTableSize(0),
   fLogicWorld(0)
-{ }
+{
+  fDetectorMessenger = new DetectorMessenger(this);
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 DetectorConstruction::~DetectorConstruction()
-{ }
+{
+  delete fDetectorMessenger;
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -119,14 +127,14 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   //
   // * all species' mass density in [kg/m^3]
 
-  fTableSize = GetMSIStableSize("../MSISE00_atmosphere.csv");
+  fTableSize = GetMSIStableSize(fAtmosphereFilename);
  
   unsigned const int tableSize = fTableSize;
   G4double msisAtmosTable[tableSize][10];
  
   // Populate vector with MSIS atmosphere table
   GetMSIStable(msisAtmosTable, 
-	       "../MSISE00_atmosphere.csv",
+	       fAtmosphereFilename,
 	       tableSize); 
 
   // Atmospheric material definitions

@@ -63,6 +63,7 @@ RunAction::RunAction()
 RunAction::~RunAction()
 {
   delete fEnergyHist;
+  delete fRunActionMessenger;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -75,9 +76,9 @@ void RunAction::BeginOfRunAction(const G4Run*)
 void RunAction::EndOfRunAction(const G4Run*)
 {
   
-  std::cout << "Writing results to histogram...";
+  G4cout << "Writing results to histogram...";
   fEnergyHist->WriteHistogramToFile(fHistogramFileName);
-  std::cout << "complete!" << std::endl;
+  G4cout << "complete!" << G4endl;
 }
 
 
