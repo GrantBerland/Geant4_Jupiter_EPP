@@ -53,7 +53,9 @@ PrimaryGeneratorAction::PrimaryGeneratorAction()
   fPitchAngleDistType(0),
   fE0(0.),
   fMaxPitchAngle(0.),
-  fInitialParticleAlt(0.)
+  fInitialParticleAlt(0.),
+  fPI(3.14159265359),
+  fRad2Deg(180. / 3.14159265359)
 {
   fParticleGun  = new G4ParticleGun();
   
@@ -78,6 +80,9 @@ PrimaryGeneratorAction::~PrimaryGeneratorAction()
 void PrimaryGeneratorAction::GenerateParticles(ParticleSample* r)
 {
 
+  G4String word;
+  std::ifstream inputFile; 
+
   // Initial position RV's
   G4double theta = G4UniformRand() * 2. * 3.1415926; // u ~ Unif[0, 2 pi)
   G4double radialPosition = G4UniformRand();  // [0, 1)
@@ -86,10 +91,8 @@ void PrimaryGeneratorAction::GenerateParticles(ParticleSample* r)
   // Random uniform sampling on a circular area
   r->xPos = diskRadius * std::sqrt(radialPosition) * std::cos(theta);
   r->yPos = diskRadius * std::sqrt(radialPosition) * std::sin(theta);
-  // TMP
-  //r->xPos = 0;
-  //r->yPos = 0;
-  // 0.5x due to coordinate axis location in middle of volume
+  
+  // 1/2 due to coordinate axis location in middle of volume
   r->zPos = (fInitialParticleAlt/2.)*km;
 
   // Particle attribute RV's
@@ -132,7 +135,18 @@ void PrimaryGeneratorAction::GenerateParticles(ParticleSample* r)
       // pitch angle = maxPitchAngle
       pitchAngle = maxPitchAngle;
       break;
-    
+
+    case(4):
+      // Reads in electron pitch angles from file for stochastic
+      // collocation methods
+      inputFile.open("pitchAngleFile.csv", std::ios_base::in);
+      
+      inputFile >> word;
+      pitchAngle = std::stod(word) / fRad2Deg;  
+
+      inputFile.close();
+
+      break;
     default:
       throw std::invalid_argument("Select a pitch angle distribution");
   }
@@ -154,7 +168,18 @@ void PrimaryGeneratorAction::GenerateParticles(ParticleSample* r)
     case(1): // Monoenergetic with energy fE0
       r->energy = fE0 * keV;
       break;
-   
+
+    case(2): // Set prescribed energy values from file
+      	     // for stochastic collocation methods
+      
+      inputFile.open("energyFile.csv", std::ios_base::in);
+      inputFile >> word;
+	
+      r->energy = std::stod(word) * keV;
+
+      inputFile.close();
+      break;
+    
     default:
      throw std::invalid_argument("Need to enter an energy distribution!");
   }  

@@ -82,6 +82,8 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
     G4double        fE0;
     G4double        fMaxPitchAngle;
     G4double        fInitialParticleAlt;
+    G4double	    fPI;
+    G4double	    fRad2Deg;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

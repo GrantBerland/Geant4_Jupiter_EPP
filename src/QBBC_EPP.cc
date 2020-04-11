@@ -50,6 +50,7 @@
 #include "G4DecayPhysics.hh"
 #include "G4EmStandardPhysics.hh"
 #include "G4EmStandardPhysics_option2.hh"
+#include "G4EmLowEPPhysics_EPP.hh"
 #include "G4EmExtraPhysics.hh"
 #include "G4StoppingPhysics.hh"
 
@@ -64,8 +65,7 @@
 
 QBBC_EPP::QBBC_EPP( G4int ver, const G4String&)
 {
-  //G4DataQuestionaire it(photon, neutronxs);
-  G4cout << "<<< Reference Physics List QBBC "
+  G4cout << "<<< Reference Physics List QBBC_EPP "
 	 <<G4endl;	
 
   //defaultCutValue = 0.7*mm;  
@@ -73,26 +73,29 @@ QBBC_EPP::QBBC_EPP( G4int ver, const G4String&)
   SetVerboseLevel(ver);
 
   // EM Physics
-  RegisterPhysics( new G4EmStandardPhysics(ver) );
+  //RegisterPhysics( new G4EmStandardPhysics(ver) );
+  
+  // Low energy EM Physics
+  RegisterPhysics( new G4EmLowEPPhysics(ver) );
 
   // Synchroton Radiation & GN Physics
-  RegisterPhysics( new G4EmExtraPhysics(ver) );
+  //RegisterPhysics( new G4EmExtraPhysics(ver) );
 
   // Decays
   // turn back on later? -GB
   //RegisterPhysics( new G4DecayPhysics(ver) );
 
    // Hadron Physics
-  RegisterPhysics( new G4HadronElasticPhysicsXS(ver) );
+  //RegisterPhysics( new G4HadronElasticPhysicsXS(ver) );
 
   // Stopping physics for what? (all parts.?)
-  RegisterPhysics( new G4StoppingPhysics(ver) );
+  //RegisterPhysics( new G4StoppingPhysics(ver) );
 
   // General hadronic/ionic interactions
-  RegisterPhysics( new G4IonPhysics(ver) );
+  //RegisterPhysics( new G4IonPhysics(ver) );
 
   // Proton inelastic scattering
-  RegisterPhysics( new G4HadronInelasticQBBC(ver) );
+  //RegisterPhysics( new G4HadronInelasticQBBC(ver) );
 
   // Charge exchange
   //RegisterPhysics( new G4ChargeExchangePhysics );

@@ -23,52 +23,38 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: DetectorConstruction.hh 69565 2013-05-08 12:35:31Z gcosmo $
-//
-/// \file DetectorConstruction.hh
-/// \brief Definition of the DetectorConstruction class
 
-#ifndef DetectorConstruction_h
-#define DetectorConstruction_h 1
+#ifndef G4EmLowEPPhysics_h
+#define G4EmLowEPPhysics_h 1
 
-#include "G4VUserDetectorConstruction.hh"
-#include "G4Cache.hh"
+#include "G4VPhysicsConstructor.hh"
+#include "G4EmParticleList.hh"
 #include "globals.hh"
 
-class G4VPhysicalVolume;
-class G4LogicalVolume;
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-class G4UniformMagField;
-class F03FieldSetup;
-
-class DetectorMessenger;
-
-// Detector construction class to define materials and geometry.
-class DetectorConstruction : public G4VUserDetectorConstruction
+class G4EmLowEPPhysics : public G4VPhysicsConstructor
 {
-  public:
-    DetectorConstruction();
-    virtual ~DetectorConstruction();
+public:
 
-    virtual G4VPhysicalVolume* Construct();
-    virtual void ConstructSDandField();
+  explicit G4EmLowEPPhysics(G4int ver=1, const G4String& name= "");
 
-    void SetAtmosFilename(G4String name){fAtmosphereFilename = name;};
+  virtual ~G4EmLowEPPhysics();
 
-    G4int GetMSIStableSize(G4String);
-    void GetMSIStable(G4double(*)[10], G4String, unsigned int);
+  virtual void ConstructParticle();
+  virtual void ConstructProcess();
 
-  public:
-    G4String           fAtmosphereFilename;
-  private:
-    DetectorMessenger* fDetectorMessenger;
-    G4int	       fTableSize;
-    G4LogicalVolume*   fLogicWorld;
-    G4Cache<F03FieldSetup*>    fEmFieldSetup;
-
+private:
+  G4int  verbose;
+  G4EmParticleList partList;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 #endif
+
+
+
+
+
 

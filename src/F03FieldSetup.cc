@@ -87,7 +87,7 @@ F03FieldSetup::F03FieldSetup()
   fEquation = new G4Mag_UsualEqRhs(fMagneticField);
  
   // Default values
-  fMinStep     = 1.*km ; 
+  fMinStep     = 0.01*km ; 
   fStepperType = 8;
 
   fFieldManager = GetGlobalFieldManager();
