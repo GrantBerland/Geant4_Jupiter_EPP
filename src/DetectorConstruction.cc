@@ -92,7 +92,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
   G4Tubs* solidWorld = new G4Tubs("World",     //its name
        0.,  			// inner radius
-       world_sizeXY, 	// outer radius
+       world_sizeXY, 	        // outer radius
        0.5*world_sizeZ,         // z half length
        0.,			// starting phi
        360.*deg);		// segment angle
@@ -128,14 +128,15 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   // * all species' mass density in [kg/m^3]
 
   fTableSize = GetMSIStableSize(fAtmosphereFilename);
- 
+
+  // Cast to const for table instantiation
   unsigned const int tableSize = fTableSize;
   G4double msisAtmosTable[tableSize][10];
  
-  // Populate vector with MSIS atmosphere table
-  GetMSIStable(msisAtmosTable, 
-	       fAtmosphereFilename,
-	       tableSize); 
+  // Populate array with MSIS atmosphere table
+  GetMSIStable(msisAtmosTable,      // array to populate 
+	       fAtmosphereFilename, // filename of table
+	       tableSize);          // int of table size
 
   // Atmospheric material definitions
   G4Element* O = new G4Element("Oxygen",
@@ -190,7 +191,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
      pressure = R_gas_constant_air * 
 	        (msisAtmosTable[i][2]) * 
 	         msisAtmosTable[i][4];
-    
+     // TODO: replace R gas constant with layer mean mass! 
 
      nComponents    = 0;
      totalAtmosMass = 0;
@@ -306,7 +307,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 				   "AtmosphereLayer"+std::to_string(i));
 
      
-     layerLocation = (i-fTableSize/2) * layerThickness + layerThickness/2.;
+     layerLocation = (i-fTableSize/2)* layerThickness + layerThickness/2.;
      
      new G4PVPlacement(0,
 		       G4ThreeVector(0.,0.,layerLocation),

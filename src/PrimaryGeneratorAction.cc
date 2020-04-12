@@ -92,8 +92,8 @@ void PrimaryGeneratorAction::GenerateParticles(ParticleSample* r)
   r->xPos = diskRadius * std::sqrt(radialPosition) * std::cos(theta);
   r->yPos = diskRadius * std::sqrt(radialPosition) * std::sin(theta);
   
-  // 1/2 due to coordinate axis location in middle of volume
-  r->zPos = (fInitialParticleAlt/2.)*km;
+  // Subtraction due to coordinate axis location in middle of volume
+  r->zPos = (fInitialParticleAlt - 500)*km;
 
   // Particle attribute RV's
   // Starts electrons with gyromotion about field line
