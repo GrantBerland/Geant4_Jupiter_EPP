@@ -39,7 +39,7 @@ private:
   // depostion to histogram
   int initializedFlag = 0;   
   
-  // Array initialized to zeros (with fixed resolution :( )
+  // Array initialized to zeros (with fixed resolution)
   double histogramArray[1000] = {};
 };
 

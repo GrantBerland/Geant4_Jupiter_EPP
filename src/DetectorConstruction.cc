@@ -87,7 +87,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
   // World
   G4double world_sizeXY = 1000.0*km;
-  G4double world_sizeZ  = 1020.*km;
+  G4double world_sizeZ  = 1000.0*km;
   // G4Material* world_mat = nist->FindOrBuildMaterial("G4_AIR");
 
   G4Tubs* solidWorld = new G4Tubs("World",     //its name
@@ -170,7 +170,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   
   G4Tubs* atmosphereLayer = new G4Tubs("AtmosphereLayer",
 		       	       		0.,
-		  			world_sizeXY-1.*cm,
+		  			world_sizeXY,
 		       	       		0.5*layerThickness,
 					0.,
 					360.*deg);

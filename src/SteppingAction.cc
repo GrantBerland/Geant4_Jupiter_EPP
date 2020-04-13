@@ -86,8 +86,6 @@ SteppingAction::~SteppingAction()
 void SteppingAction::UserSteppingAction(const G4Step* step)
 {
 
-  //G4AutoLock l(&aMutex);
-
   G4Track* track = step->GetTrack();
   G4String particleName = 
 	  track->GetDynamicParticle()->GetDefinition()->GetParticleName();
@@ -108,21 +106,20 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
     	{
 	  // Gets altitude of particle
       	  G4ThreeVector position = track->GetPosition();
-      	  G4double      alt      = position.z();
+      	  G4double      zPos     = position.z();
       
           // Adds energy deposition to vector owned by RunAction, which is
           // written to a results file per simulation run
-      	  G4int altitudeAddress = std::floor(1020./2. + alt/km);
+      	  G4int altitudeAddress = std::floor(500. + zPos/km);
       
 	  // Thread lock this so only one thread can deposit energy into
 	  // the histogram at a time. Unlocks when l goes out of scope.
-	  //l.lock();
 	  if(altitudeAddress > 0 && altitudeAddress < 1000) 
 	  {
 	    LogEnergy(altitudeAddress, energyDep/keV);
 	  }
         }
-    }
+      }
       break;
     
     case(1):  // Collects particle trajectory (warning, lots of data!)
