@@ -32,7 +32,13 @@
 
 # 0 - energy deposition per altitude (histogram)
 # 1 - particle trajectory (x, y, z, E) (warning, lots of data!!!)
+# 2 - tracks spectra of backscattered photons and particles
 /dataCollection/setDataCollection 0 
+
+# 0 - electrons
+# 1 - solar X-ray spectrum
+# 2 - CXB (Cosmic X-ray Background)
+/energy/setSourceType 0
 
 # Set file name for histogram or results file
 /dataCollection/setHistFileName energyHistogram_test2.txt

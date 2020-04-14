@@ -62,7 +62,9 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
     // method from the base class
     virtual void GeneratePrimaries(G4Event*);         
 
-    void GenerateParticles(ParticleSample*);
+    void GenerateElectrons(ParticleSample*);
+    void GenerateSolarSpectra(ParticleSample*);
+    void GenerateCXB(ParticleSample*);
     
     // Messenger methods
     void SetEnergy(G4double E0){ fE0 = E0;};
@@ -70,7 +72,7 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
     void SetPitchAngleDistribution(G4int pad){fPitchAngleDistType = pad;};
     void SetMaxPitchAngle(G4double maxPA){ fMaxPitchAngle = maxPA; };
     void SetPartInitialAlt(G4double alt){ fInitialParticleAlt = alt; };
-
+    void SetSourceInputType(G4int type){ fSourceType = type; };
     // method to access particle gun
     const G4ParticleGun* GetParticleGun() const { return fParticleGun; }
   
@@ -84,6 +86,7 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
     G4double        fInitialParticleAlt;
     G4double	    fPI;
     G4double	    fRad2Deg;
+    G4int           fSourceType;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

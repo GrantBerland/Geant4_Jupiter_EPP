@@ -25,6 +25,11 @@ PrimaryGeneratorMessenger::PrimaryGeneratorMessenger(PrimaryGeneratorAction* pri
   fcmd2->SetDefaultValue(0);
   fcmd2->AvailableForStates(G4State_PreInit, G4State_Idle);
 
+  fcmd3 = new G4UIcmdWithAnInteger("/energy/setSourceType",this);
+  fcmd3->SetParameterName("0: electrons, 1: solar X-ray spectra, 2: CXB",true);
+  fcmd3->SetDefaultValue(0);
+  fcmd3->AvailableForStates(G4State_PreInit, G4State_Idle);
+  
   fDcmd = new G4UIcmdWithADouble("/energy/setFoldingEnergy",this);
   fDcmd->SetParameterName("Folding or Mono Energy [keV]",true);
   fDcmd->SetDefaultValue(100.);
@@ -46,6 +51,7 @@ PrimaryGeneratorMessenger::~PrimaryGeneratorMessenger()
   delete fPrimDir;
   delete fcmd;
   delete fcmd2;
+  delete fcmd3;
   delete fDcmd;
   delete fDcmd2;
   delete fDcmd3;
@@ -74,4 +80,7 @@ void PrimaryGeneratorMessenger::SetNewValue(G4UIcommand* command,
     fPrimaryGenerator->SetPartInitialAlt(std::stod(newValue));
   }
 
+  if(command == fcmd3){
+    fPrimaryGenerator->SetSourceInputType(std::stoi(newValue));
+  }
 }

@@ -55,7 +55,8 @@ PrimaryGeneratorAction::PrimaryGeneratorAction()
   fMaxPitchAngle(0.),
   fInitialParticleAlt(0.),
   fPI(3.14159265359),
-  fRad2Deg(180. / 3.14159265359)
+  fRad2Deg(180. / 3.14159265359),
+  fSourceType(0)
 {
   fParticleGun  = new G4ParticleGun();
   
@@ -77,7 +78,7 @@ PrimaryGeneratorAction::~PrimaryGeneratorAction()
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void PrimaryGeneratorAction::GenerateParticles(ParticleSample* r)
+void PrimaryGeneratorAction::GenerateElectrons(ParticleSample* r)
 {
 
   G4String word;
@@ -185,6 +186,16 @@ void PrimaryGeneratorAction::GenerateParticles(ParticleSample* r)
   }  
 }
 
+void PrimaryGeneratorAction::GenerateSolarSpectra(ParticleSample* r)
+{
+
+}
+
+void PrimaryGeneratorAction::GenerateCXB(ParticleSample* r)
+{
+
+}
+
 void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 {
   // Struct to store particle initial properties: 
@@ -194,7 +205,23 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   ParticleSample* r = new ParticleSample();
  
   // Generator method to fill ParticleSample struct
-  GenerateParticles(r);
+  switch(fSourceType)
+  {
+    case(0):
+      GenerateElectrons(r);
+      break;
+ 
+    case(1):
+      GenerateSolarSpectra(r);
+      break;
+    
+    case(2):
+      GenerateCXB(r);
+      break;
+    
+    default:
+      throw std::invalid_argument("Enter a valid source type");
+  }
 
   fParticleGun->SetParticlePosition(
 		  G4ThreeVector(r->xPos, r->yPos, r->zPos)); 
