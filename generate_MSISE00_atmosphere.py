@@ -31,10 +31,14 @@ import sys
 
 altitudeStepSize = 10   # km
 lowerAlt         = 0    # km
-upperAlt         = 1000 # km
+upperAlt         = 990  # km
 
 # Datetime for MSIS model run
-time = datetime(2018, 3, 31, 12);
+year  = 2018
+month = 1
+day   = 1
+hour  = 3
+time = datetime(year, month, day, hour);
 
 # Geographic latitude , longitude
 g_lat_lon = [65. , -148.]
