@@ -69,6 +69,10 @@ SteppingAction::SteppingAction(EventAction* eventAction, RunAction* RuAct)
       G4cout << "Particle trajectory being recorded..." << G4endl;
       break;
     
+    case(2):
+      G4cout << "Particle backscatter flux being recorded..." << G4endl;
+      break;
+
     default:
       throw std::invalid_argument("No data being recorded, exiting...");
       break;
@@ -158,7 +162,23 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
       
       }
       break;
-    
+   
+    case(2):
+      
+      if(particleName == "e-" || particleName == "gamma")
+      {
+        
+	G4ThreeVector momentumDirection = track->GetMomentumDirection();
+
+	if(momentumDirection.z() > 0)
+	{
+
+	}
+
+      }
+      
+      break;
+
     default: 
       throw std::runtime_error("Enter a valid data collection type!");
       break;
