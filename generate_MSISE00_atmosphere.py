@@ -29,9 +29,9 @@ import sys
 ##Input parameters to MSISe-00##
 ################################
 
-altitudeStepSize = 10   # km
+altitudeStepSize = 1   # km
 lowerAlt         = 0    # km
-upperAlt         = 990  # km
+upperAlt         = 999  # km
 
 # Datetime for MSIS model run
 year  = 2018
