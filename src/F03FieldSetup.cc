@@ -72,14 +72,6 @@ F03FieldSetup::F03FieldSetup()
    fStepper(0),
    fFieldMessenger(0)
 {
-  /*
-  fMagneticField = new G4UniformMagField(G4ThreeVector(0.0,
-                                                       0.0, // 0.5*tesla,
-                                                       3.3*tesla));
-  fLocalMagneticField = new G4UniformMagField(G4ThreeVector(0.0,
-                                                            0.0, 
-							    3.3*tesla));
-  */
   fMagneticField      = new EarthDipoleField(); 
 	  
   fFieldMessenger = new F03FieldMessenger(this);

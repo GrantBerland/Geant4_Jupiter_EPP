@@ -55,7 +55,7 @@ void EarthDipoleField::GetFieldValue(const G4double Point[4],
   Bfield[5] = 0; // Ez
 
   // Debugging print statement
-  //std::cout << "Bz = " << Bfield[2]/tesla*1e6 << " nT" << std::endl;
+  //std::cout << "Bz = " << (Bfield[2]/tesla)*1e9 << " nT" << std::endl;
 }
 
 

@@ -91,17 +91,12 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
 {
 
   G4Track* track = step->GetTrack();
-  G4String particleName = 
-	  track->GetDynamicParticle()->GetDefinition()->GetParticleName();
   
   switch(fDataCollectionType)
   {
     
     case(0):  // Collects energy deposition per altitude
-  
-      if(particleName == "e-" || particleName == "gamma")
-      {
-
+    { 
     	// Gets energy delta of particle over step length
     	const G4double energyDep = step->GetPreStepPoint()->GetKineticEnergy() - 
 		step->GetPostStepPoint()->GetKineticEnergy();
@@ -123,10 +118,13 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
 	    LogEnergy(altitudeAddress, energyDep/keV);
 	  }
         }
-      }
       break;
-    
+    }
     case(1):  // Collects particle trajectory (warning, lots of data!)
+    {
+      G4String particleName = 
+	  track->GetDynamicParticle()->GetDefinition()->GetParticleName();
+      
       if(particleName == "e-")
       {
 
@@ -162,8 +160,11 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
       
       }
       break;
-   
+    }
     case(2):
+    {  
+      G4String particleName = 
+	  track->GetDynamicParticle()->GetDefinition()->GetParticleName();
       
       if(particleName == "e-" || particleName == "gamma")
       {
@@ -178,7 +179,7 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
       }
       
       break;
-
+    }
     default: 
       throw std::runtime_error("Enter a valid data collection type!");
       break;

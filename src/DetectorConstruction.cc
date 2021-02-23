@@ -92,20 +92,20 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
   G4Tubs* solidWorld = new G4Tubs("World",     //its name
        0.,  			// inner radius
-       world_sizeXY, 	        // outer radius
-       0.5*world_sizeZ,         // z half length
+       world_sizeXY,  	        // outer radius
+       0.5*world_sizeZ,   	// z half length
        0.,			// starting phi
        360.*deg);		// segment angle
 
   fLogicWorld =
     new G4LogicalVolume(solidWorld,          //its solid
-                        vacuum_material,           //its material
+                        vacuum_material,     //its material
                         "World");            //its name
 
   G4VPhysicalVolume* physWorld =
     new G4PVPlacement(0,                     //no rotation
                       G4ThreeVector(),       //at (0,0,0)
-                      fLogicWorld,            //its logical volume
+                      fLogicWorld,           //its logical volume
                       "World",               //its name
                       0,                     //its mother  volume
                       false,                 //no boolean operation
@@ -166,13 +166,13 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   
 
   // Layers are the size needed to fill the 1000 km column
-  G4double layerThickness = ( int(1000 / tableSize) )*km;
+  G4double layerThickness = ( int(1000 / tableSize) )*km-1.*um;
   G4double layerLocation;
   
   G4Tubs* atmosphereLayer = new G4Tubs("AtmosphereLayer",
 		       	       		0.,
-		  			world_sizeXY,
-		       	       		0.5*layerThickness,
+		  			world_sizeXY-1.*mm,
+		       	       		0.5*layerThickness-1.*mm,
 					0.,
 					360.*deg);
   G4Material*      layerMaterial;
@@ -308,7 +308,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 				   "AtmosphereLayer"+std::to_string(i));
 
      
-     layerLocation = (i-fTableSize/2)* layerThickness + layerThickness/2.;
+     layerLocation = (i-fTableSize/2)*layerThickness + layerThickness/2.;
      
      new G4PVPlacement(0,
 		       G4ThreeVector(0.,0.,layerLocation),
