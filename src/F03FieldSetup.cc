@@ -44,9 +44,14 @@
 #include "EarthDipoleField.hh"
 #include "G4FieldManager.hh"
 #include "G4TransportationManager.hh"
+#include "G4Transportation.hh"
 #include "G4Mag_UsualEqRhs.hh"
 #include "G4MagIntegratorStepper.hh"
 #include "G4ChordFinder.hh"
+
+#include "G4ParticleDefinition.hh"
+#include "G4ParticleTable.hh"
+#include "G4ProcessManager.hh"
 
 #include "G4ExplicitEuler.hh"
 #include "G4ImplicitEuler.hh"
@@ -77,7 +82,8 @@ F03FieldSetup::F03FieldSetup()
   fFieldMessenger = new F03FieldMessenger(this);
  
   fEquation = new G4Mag_UsualEqRhs(fMagneticField);
- 
+
+
   // Default values
   fMinStep     = 0.01*km ; 
   fStepperType = 8;
@@ -123,8 +129,26 @@ void F03FieldSetup::UpdateField()
 
   // 4. Ensure that the field is updated (in Field manager & equation)
   fFieldManager->SetDetectorField(fMagneticField);
-}
+  
+  
+  // Loosen looping particle tolerance
+  //G4TransportationManager* transpo = GetTransportationManager();
+  //transpo->SetThresholdWarningEnergy(1.0*keV);
 
+  G4ParticleDefinition* electronParticle = G4ParticleTable::GetParticleTable()->FindParticle("e-");
+  
+  G4VProcess* procTr = electronParticle->GetProcessManager()->GetProcess("Transportation");
+  
+  G4Transportation* electronTransport= dynamic_cast<G4Transportation*>(procTr);
+
+  if( electronTransport)
+  {  
+    electronTransport->SetThresholdWarningEnergy(1.0*keV);
+    electronTransport->SetThresholdImportantEnergy(10.0*keV); 
+    electronTransport->SetThresholdTrials(5000); // 1000 by default 
+    }
+
+}
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void F03FieldSetup::SetStepper()
@@ -204,6 +228,7 @@ void F03FieldSetup::SetFieldValue(G4ThreeVector fieldVector)
     // that it is not used for propagation.
     fMagneticField = 0;
   }
+  
 
   // Either
   //   - UpdateField() to reset all (ChordFinder, Equation);
@@ -217,10 +242,14 @@ void F03FieldSetup::SetFieldValue(G4ThreeVector fieldVector)
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-G4FieldManager* F03FieldSetup::GetGlobalFieldManager()
-{
+G4FieldManager* F03FieldSetup::GetGlobalFieldManager(){
   return G4TransportationManager::GetTransportationManager()
                                   ->GetFieldManager();
+}
+
+G4TransportationManager* F03FieldSetup::GetTransportationManager()
+{
+  return G4TransportationManager::GetTransportationManager();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

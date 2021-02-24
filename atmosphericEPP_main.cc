@@ -52,12 +52,16 @@
 #include "G4SystemOfUnits.hh"
 #include "Randomize.hh"
 
+#include <chrono>
 
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 int main(int argc,char** argv)
 {
+
+  // Start simulation timer
+  auto t_start = std::chrono::high_resolution_clock::now();
 
   // Detect interactive mode (if no arguments) and define UI session
   G4UIExecutive* ui = 0;
@@ -137,6 +141,15 @@ int main(int argc,char** argv)
 
   delete visManager;
   delete runManager;
+
+  // End simulation timer
+  auto t_end = std::chrono::high_resolution_clock::now();
+
+  // Calculate elapsed simulation (wall) time
+  double elapsed_time_ms = std::chrono::duration<double, std::milli>(t_end-t_start).count();
+
+
+  std::cout << "Simulation completed in : " << elapsed_time_ms/1000. << " seconds" << std::endl;
 
   return 0;
 }
