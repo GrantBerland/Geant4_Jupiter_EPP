@@ -42,7 +42,6 @@
 
 class G4ProcessManager;
 class G4FieldManager;
-class G4TransportationManager;
 class G4ChordFinder;
 class G4Mag_UsualEqRhs;
 class G4MagIntegratorStepper;
@@ -76,7 +75,6 @@ public:
   
   // Find the global Field Manager
   G4FieldManager*            GetGlobalFieldManager();
-  G4TransportationManager*   GetTransportationManager();
 
 protected:
 

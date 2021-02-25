@@ -63,6 +63,7 @@
 #include "G4HelixSimpleRunge.hh"
 #include "G4CashKarpRKF45.hh"
 #include "G4RKG3_Stepper.hh"
+#include "G4DormandPrince745.hh"
 
 #include "G4PhysicalConstants.hh"
 #include "G4SystemOfUnits.hh"
@@ -86,7 +87,7 @@ F03FieldSetup::F03FieldSetup()
 
   // Default values
   fMinStep     = 0.01*km ; 
-  fStepperType = 8;
+  fStepperType = 10;
 
   fFieldManager = GetGlobalFieldManager();
 
@@ -132,22 +133,23 @@ void F03FieldSetup::UpdateField()
   
   
   // Loosen looping particle tolerance
-  //G4TransportationManager* transpo = GetTransportationManager();
-  //transpo->SetThresholdWarningEnergy(1.0*keV);
-
-  G4ParticleDefinition* electronParticle = G4ParticleTable::GetParticleTable()->FindParticle("e-");
+/*
+  //G4ParticleDefinition* electronParticle = G4ParticleTable::GetParticleTable()->FindParticle("e-");
   
+  //G4ProcessVector* procTr = electronParticle->GetProcessManager()->GetProcessList();
+
   G4VProcess* procTr = electronParticle->GetProcessManager()->GetProcess("Transportation");
   
   G4Transportation* electronTransport= dynamic_cast<G4Transportation*>(procTr);
 
+  
   if( electronTransport)
   {  
     electronTransport->SetThresholdWarningEnergy(1.0*keV);
     electronTransport->SetThresholdImportantEnergy(10.0*keV); 
     electronTransport->SetThresholdTrials(5000); // 1000 by default 
     }
-
+*/
 }
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -198,6 +200,10 @@ void F03FieldSetup::SetStepper()
       fStepper = new G4RKG3_Stepper( fEquation );
       G4cout<<"G4RKG3_Stepper is called"<<G4endl;
       break;
+    case 10:
+      fStepper = new G4DormandPrince745( fEquation );
+      G4cout<<"ode45 is called"<<G4endl;
+      break;
     default: fStepper = 0;
   }
 }
@@ -245,11 +251,6 @@ void F03FieldSetup::SetFieldValue(G4ThreeVector fieldVector)
 G4FieldManager* F03FieldSetup::GetGlobalFieldManager(){
   return G4TransportationManager::GetTransportationManager()
                                   ->GetFieldManager();
-}
-
-G4TransportationManager* F03FieldSetup::GetTransportationManager()
-{
-  return G4TransportationManager::GetTransportationManager();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
