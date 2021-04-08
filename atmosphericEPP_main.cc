@@ -98,7 +98,7 @@ int main(int argc,char** argv)
   G4VModularPhysicsList* physicsList = factory.GetReferencePhysList("QBBC");
   
   //G4VModularPhysicsList* physicsList = new FTFP_BERT;
-  //physicsList->RegisterPhysics(new G4StepLimiterPhysics());
+  physicsList->RegisterPhysics(new G4StepLimiterPhysics());
 
   physicsList->SetVerboseLevel(1);
   runManager->SetUserInitialization(new DetectorConstruction());

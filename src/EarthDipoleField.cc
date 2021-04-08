@@ -37,9 +37,9 @@ void EarthDipoleField::GetFieldValue(const G4double Point[4],
   G4double geomagLat_radians = fGeomagLatitude * 3.1415926 / 180.;
 
   // Radial distance from Earth center, input in kilometers
-  // 1020 km / 2 = 510 km addition to account for coordinate axes in 
+  // 1000 km / 2 = 500 km addition to account for coordinate axes in 
   // center of simulation volume
-  G4double z = fEarthRadius + (Point[2]/km + 1020./2.);  // km
+  G4double z = fEarthRadius + (Point[2]/km + 1000./2.);  // km
 
   // Magnitude of B-field, units assigned here
   G4double B_magnitude = fDipoleMoment / std::pow(z, 3) * tesla; // T
