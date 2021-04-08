@@ -30,7 +30,7 @@
 // Base simulation building classes
 #include "DetectorConstruction.hh"
 #include "ActionInitialization.hh"
-
+#include "RunAction.hh"
 
 // Multithreading header support
 #ifdef G4MULTITHREADED
@@ -51,8 +51,15 @@
 
 #include "G4SystemOfUnits.hh"
 #include "Randomize.hh"
+#include "G4EmParameters.hh"
+#include "G4HadronicProcessStore.hh"
 
 #include <chrono>
+
+// For Printing statistic from Transporation process(es)
+#include "G4Electron.hh"
+#include "G4Transportation.hh"
+#include "G4CoupledTransportation.hh"
 
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -108,6 +115,28 @@ int main(int argc,char** argv)
   G4double lowLimit = 250. * eV;
   G4double highLimit = 100. * GeV;
   G4ProductionCutsTable::GetProductionCutsTable()->SetEnergyRange(lowLimit, highLimit);
+
+
+  // Fine grained control of thresholds for looping particles
+  auto runAction= new RunAction();
+  runAction->SetWarningEnergy(   1.0 * keV );
+              // Looping particles with E < ^ keV will be killed after 1 step
+              //   with warning.
+              // Looping particles with E > ^ keV will generate a warning.
+  runAction->SetImportantEnergy( 0.1 * keV );
+  runAction->SetNumberOfTrials( 30 );
+              // Looping particles with E > 0.1 MeV will survive for up to
+              //  30 'tracking' steps, and only be killed if they still loop.
+  // Note: this mechanism overwrites the thresholds established by
+  //       the call to UseLowLooperThresholds() above.
+  
+  runManager->SetUserAction(runAction);
+
+
+  // Suppress large verbosity from EM & hadronic processes
+  G4EmParameters::Instance()->SetVerbose(-1);
+  G4HadronicProcessStore::Instance()->SetVerbose(0);
+
 
 
   // Initialize visualization

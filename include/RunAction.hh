@@ -39,9 +39,12 @@
 
 // Choose your fighter:
 // #include "g4root.hh"
-#include "g4xml.hh"
+//#include "g4xml.hh"
 // #include "g4csv.hh"
 
+class G4ParticleDefinition;
+class G4Transportation;
+class G4CoupledTransportation;
 class G4Run;
 class SteppingAction;
 class myHistogram;
@@ -66,12 +69,37 @@ class RunAction : public G4UserRunAction
 
     void SetHistFileName(G4String name){fHistogramFileName=name;};
 
+    // Helper method to change the Transportation's 'looper' parameters 
+    void ChangeLooperParameters(const G4ParticleDefinition* particleDef );
+
+    // Helper method to find the Transportation process for a particle type 
+    std::pair<G4Transportation*, G4CoupledTransportation*>
+     findTransportation( const G4ParticleDefinition * particleDef,
+                         bool reportError= true );
+
+  public:
+    void     SetNumberOfTrials( G4int val )   { fNumberOfTrials  = val; }
+    void     SetWarningEnergy( double val )   { fWarningEnergy   = val; }
+    void     SetImportantEnergy( double val ) { fImportantEnergy = val; }   
+    G4int    GetNumberOfTrials()  { return fNumberOfTrials; }
+    G4double GetWarningEnergy()   { return fWarningEnergy; }
+    G4double GetImportantEnergy() { return fImportantEnergy; } 
+
   public:
     myHistogram*           fEnergyHist;
+  
   private:
     RunActionMessenger*    fRunActionMessenger;
     G4String 		   fHistogramFileName;
-    
+  
+    // Values for initialising 'loopers' parameters of Transport process
+    G4int    fNumberOfTrials  =  0;    // Default will not overwrite
+    G4double fWarningEnergy   = -1.0;  // Default values - non operational 
+    G4double fImportantEnergy = -1.0;  // Default - will not overwrite
+
+    int    theVerboseLevel = 0;
+
+
 };
 
 

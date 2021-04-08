@@ -86,8 +86,8 @@ F03FieldSetup::F03FieldSetup()
 
 
   // Default values
-  fMinStep     = 0.1*km ; 
-  fStepperType = 4;
+  fMinStep     = 0.01*km ; 
+  fStepperType = 10;
 
   fFieldManager = GetGlobalFieldManager();
 
@@ -131,25 +131,6 @@ void F03FieldSetup::UpdateField()
   // 4. Ensure that the field is updated (in Field manager & equation)
   fFieldManager->SetDetectorField(fMagneticField);
   
-  
-  // Loosen looping particle tolerance
-/*
-  //G4ParticleDefinition* electronParticle = G4ParticleTable::GetParticleTable()->FindParticle("e-");
-  
-  //G4ProcessVector* procTr = electronParticle->GetProcessManager()->GetProcessList();
-
-  G4VProcess* procTr = electronParticle->GetProcessManager()->GetProcess("Transportation");
-  
-  G4Transportation* electronTransport= dynamic_cast<G4Transportation*>(procTr);
-
-  
-  if( electronTransport)
-  {  
-    electronTransport->SetThresholdWarningEnergy(1.0*keV);
-    electronTransport->SetThresholdImportantEnergy(10.0*keV); 
-    electronTransport->SetThresholdTrials(5000); // 1000 by default 
-    }
-*/
 }
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
