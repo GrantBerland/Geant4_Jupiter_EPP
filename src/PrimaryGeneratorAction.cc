@@ -51,9 +51,9 @@ PrimaryGeneratorAction::PrimaryGeneratorAction()
   fPrimaryMessenger(0),
   fEnergyDistType(0),
   fPitchAngleDistType(0),
-  fE0(0.),
-  fMaxPitchAngle(0.),
-  fInitialParticleAlt(0.),
+  fE0(100.),
+  fMaxPitchAngle(40.),
+  fInitialParticleAlt(500.),
   fPI(3.14159265359),
   fRad2Deg(180. / 3.14159265359),
   fSourceType(0)
@@ -163,7 +163,7 @@ void PrimaryGeneratorAction::GenerateElectrons(ParticleSample* r)
   switch(fEnergyDistType) // set by PrimaryMessenger
   {
     case(0): // Exponential energy distribution with folding energy fE0
-      r->energy = -fE0 * std::log(1 - G4UniformRand()) * keV;
+      r->energy = -fE0 * std::log( G4UniformRand() ) * keV;
       break;
 
     case(1): // Monoenergetic with energy fE0
