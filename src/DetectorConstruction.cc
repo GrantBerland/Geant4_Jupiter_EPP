@@ -51,7 +51,7 @@
 
 DetectorConstruction::DetectorConstruction()
 : G4VUserDetectorConstruction(),
-  fAtmosphereFilename("MSISE00_atmosphere.csv"),
+  fAtmosphereFilename("Jupiter_atmosphere.csv"),
   fDetectorMessenger(),
   fTableSize(0),
   fLogicWorld(0)
@@ -115,15 +115,14 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   // msisAtmosTable contents:
   //
   // [0] - alt [km] 
-  // [1] - O   * 
-  // [2] - N2  *
-  // [3] - O2  *
-  // [4] - Total mass den [kg/m^3] 
-  // [5] - Temp [K] 
-  // [6] - He  *
-  // [7] - Ar  *
-  // [8] - H   *
-  // [9] - N   *
+  // [1] - He   * 
+  // [2] - H    *
+  // [3] - H2   *
+  // [4] - CH4  *
+  // [5] - Total mass den * 
+  // [6] - Temp [K]
+  // [7] - R_u [J/kg-K]
+
   //
   // * all species' mass density in [kg/m^3]
 
@@ -131,7 +130,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
   // Cast to const for table instantiation
   unsigned const int tableSize = fTableSize;
-  G4double msisAtmosTable[tableSize][10];
+  G4double msisAtmosTable[tableSize][8];
  
   // Populate array with MSIS atmosphere table
   GetMSIStable(msisAtmosTable,      // array to populate 
@@ -139,21 +138,6 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 	       tableSize);          // int of table size
 
   // Atmospheric material definitions
-  G4Element* O = new G4Element("Oxygen",
-		  	       "O",
-		               8.,
-			       16.0*g/mole);
-  
-  G4Element* N = new G4Element("Nitrogen",
-		  	       "N",
-		               7.,
-			       14.0*g/mole);
-
-  G4Element* Ar = new G4Element("Argon",
-		  	       "Ar",
-		               18.,
-			       39.948*g/mole);
-  
   G4Element* He = new G4Element("Helium",
 		  	       "He",
 		               2.,
@@ -163,7 +147,12 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 		  	       "H",
 		               1.,
 			       1.0078*g/mole);
-  
+ 
+  G4Element* C = new G4Element("Carbon",
+		  	       "C",
+			       6.,
+			       12.011*g/mole);
+
 
   // Layers are the size needed to fill the 1000 km column
   G4double layerThickness = ( int(1000 / tableSize) )*km-1.*um;
@@ -176,78 +165,56 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 					0.,
 					360.*deg);
   G4Material*      layerMaterial;
-  G4Material*      diOxygen;
-  G4Material*      diNitrogen;
+  G4Material*      diHydrogen;
+  G4Material*      methane;
   G4LogicalVolume* logicLayer;
-  G4double         pressure;
-  G4double         R_gas_constant_air = 287.;  // J/kg-K air
   G4double         totalAtmosMass;
   // approximate minimum number density [cm^-3] that Geant will tolerate
   G4double         zeroThreshold = 1e-21; 
   G4int            nComponents;
   for(int i=0; i<fTableSize; i++)
   {
-     // Ideal gas law for atmospheric pressure
-     // P [Pa] = R [J/kg-K air] * rho [kg/m^3] * T [K]
-     pressure = R_gas_constant_air * 
-	        (msisAtmosTable[i][2]) * 
-	         msisAtmosTable[i][4];
-     // TODO: replace R gas constant with layer mean mass! 
 
      nComponents    = 0;
      totalAtmosMass = 0;
      
-     // atomic oxygen
+     // Helium
      if(msisAtmosTable[i][1] > zeroThreshold){ 
 	     nComponents++;
       	     totalAtmosMass += msisAtmosTable[i][1];}
      
-     // di-Nitrogen
+     // Hydrogen
      if(msisAtmosTable[i][2] > zeroThreshold){ 
 	     nComponents++;
-      	     totalAtmosMass += msisAtmosTable[i][2];
-        diNitrogen = new G4Material("Dinitrogen-Layer"+std::to_string(i),
-		                    msisAtmosTable[i][2]*kg/m3,
-				    1,
-				    kStateGas,
-				    msisAtmosTable[i][5]*kelvin,
-				    pressure*pascal);
-             diNitrogen->AddElement(N, 2);}
-     else{ diNitrogen = nullptr; }
+      	     totalAtmosMass += msisAtmosTable[i][2];}
      
-     // di-Oxygen
+     // di-Hydrogen
      if(msisAtmosTable[i][3] > zeroThreshold){ 
 	     nComponents++;
       	     totalAtmosMass += msisAtmosTable[i][3];
-             diOxygen = new G4Material("Dioxgyen-Layer"+std::to_string(i),
+        diHydrogen = new G4Material("Dihydrogen-Layer"+std::to_string(i),
 		                    msisAtmosTable[i][3]*kg/m3,
 				    1,
 				    kStateGas,
-				    msisAtmosTable[i][4]*kelvin,
-				    pressure*pascal);
-             diOxygen->AddElement(O, 2);}
+				    msisAtmosTable[i][6]*kelvin,
+				msisAtmosTable[i][3]*msisAtmosTable[i][7]*msisAtmosTable[i][6]*pascal);
+             diHydrogen->AddElement(H, 2);}
+     else{ diHydrogen = nullptr; }
      
-     // Helium
-     if(msisAtmosTable[i][6] > zeroThreshold){ 
+     // Methane
+     if(msisAtmosTable[i][4] > zeroThreshold){ 
 	     nComponents++;
-      	     totalAtmosMass += msisAtmosTable[i][6];}
+      	     totalAtmosMass += msisAtmosTable[i][4];
+        methane = new G4Material("Methane-Layer"+std::to_string(i),
+		                    msisAtmosTable[i][4]*kg/m3,
+				    2,
+				    kStateGas,
+				    msisAtmosTable[i][6]*kelvin,
+				msisAtmosTable[i][4]*msisAtmosTable[i][7]*msisAtmosTable[i][6]*pascal);
+             methane->AddElement(C, 1);
+     	     methane->AddElement(H, 4);}
+     else{ methane = nullptr; }
      
-     // Argon
-     if(msisAtmosTable[i][7] > zeroThreshold){ 
-	     nComponents++;
-      	     totalAtmosMass += msisAtmosTable[i][7];}
-     
-     // Hydrogen
-     if(msisAtmosTable[i][8] > zeroThreshold){ 
-	     nComponents++;
-      	     totalAtmosMass += msisAtmosTable[i][8];}
-     
-     // Nitrogen
-     if(msisAtmosTable[i][9] > zeroThreshold){ 
-	     nComponents++;
-      	     totalAtmosMass += msisAtmosTable[i][9];}
-     
-
      // test material
      //layerMaterial = low_density_material;
      
@@ -255,52 +222,35 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 		     totalAtmosMass*kg/m3,       // density
 		     nComponents,                // number of components
 		     kStateGas,                  // state
-		     msisAtmosTable[i][4]*kelvin,// temperature
-		     pressure*pascal); 	         // pressure
+		     msisAtmosTable[i][6]*kelvin,// temperature
+		msisAtmosTable[i][5]*msisAtmosTable[i][6]*msisAtmosTable[i][7]*pascal); // pressure
     
-     // alt [km], O, N2, O2, Mass den [g/cm^3], Temp [K], He, Ar, H, N
-    
-     // O
+     
+     // He 
      if(msisAtmosTable[i][1] > zeroThreshold) 
      {
-	layerMaterial->AddElement(O, 
-		       msisAtmosTable[i][1]/totalAtmosMass);
+     	layerMaterial->AddElement(He, // material, mass fraction
+		     msisAtmosTable[i][1]/totalAtmosMass); 
      }
-     // N2
+     
+     // H 
      if(msisAtmosTable[i][2] > zeroThreshold) 
      {
-     	layerMaterial->AddMaterial(diNitrogen, // material, mass fraction
+     	layerMaterial->AddElement(H, // material, mass fraction
 		     msisAtmosTable[i][2]/totalAtmosMass); 
      }
-     // O2
+    
+     // H2
      if(msisAtmosTable[i][3] > zeroThreshold) 
      {
-     	layerMaterial->AddMaterial(diOxygen, // material, mass fraction
+     	layerMaterial->AddMaterial(diHydrogen, // material, mass fraction
 		     msisAtmosTable[i][3]/totalAtmosMass); 
      }
-     // He 
-     if(msisAtmosTable[i][6] > zeroThreshold) 
+     // Methane 
+     if(msisAtmosTable[i][4] > zeroThreshold) 
      {
-     	layerMaterial->AddElement(He, // material, mass fraction
-		     msisAtmosTable[i][6]/totalAtmosMass); 
-     }
-     // Ar 
-     if(msisAtmosTable[i][7] > zeroThreshold) 
-     {
-     	layerMaterial->AddElement(Ar, // material, mass fraction
-		     msisAtmosTable[i][7]/totalAtmosMass); 
-     }
-     // H 
-     if(msisAtmosTable[i][8] > zeroThreshold) 
-     {
-     	layerMaterial->AddElement(H, // material, mass fraction
-		     msisAtmosTable[i][8]/totalAtmosMass); 
-     }
-     // N
-     if(msisAtmosTable[i][9] > zeroThreshold) 
-     {
-     	layerMaterial->AddElement(N, // material, mass fraction
-		     msisAtmosTable[i][9]/totalAtmosMass); 
+     	layerMaterial->AddMaterial(methane, // material, mass fraction
+		     msisAtmosTable[i][4]/totalAtmosMass); 
      }
 
      logicLayer = new G4LogicalVolume(atmosphereLayer,
@@ -339,7 +289,7 @@ void DetectorConstruction::ConstructSDandField()
 		        GetGlobalFieldManager(), true); 
 }
 
-void DetectorConstruction::GetMSIStable(G4double tableEntry[][10],
+void DetectorConstruction::GetMSIStable(G4double tableEntry[][8],
 					G4String filename,
 					unsigned int tableSize)
 {
