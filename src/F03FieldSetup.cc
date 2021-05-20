@@ -113,7 +113,6 @@ void F03FieldSetup::UpdateField()
   delete fChordFinder;
   fChordFinder= nullptr;
 
-  std::cout << fStepperType << std::endl;
 
   G4cout<<"F03FieldSetup::UpdateField > The minimal step is equal to "
         << fMinStep/mm <<" mm"<<G4endl;

@@ -75,6 +75,7 @@ void PlanetaryMagneticField::GetFieldValue(const G4double Point[4],
   // Magnitude of B-field, units assigned here
   G4double B_magnitude = fDipoleMoment / std::pow(z, 3) * tesla; // T
 
+  G4int altitude_index = floor(Point[2]/km + 1000./2.); // altitude of particle in km
 
   switch(fWhichPlanet)
   {
@@ -88,9 +89,19 @@ void PlanetaryMagneticField::GetFieldValue(const G4double Point[4],
   	  break;
 	
     case 1:
-  	  Bfield[0] = 0; // Bx
-  	  Bfield[1] = B_magnitude * std::cos(geomagLat_radians);       // By
-  	  Bfield[2] = B_magnitude * -2. * std::sin(geomagLat_radians); // Bz
+
+
+	  if(altitude_index > 1000 || altitude_index < 0) 
+	    {throw std::invalid_argument("Particle way out of bounds??");}
+
+
+  	// fMagData[][0] - B_phi - Bx
+	// fMagData[][1] - B_theta - By
+	// fMagData[][2] - B_r - Bz
+
+	  Bfield[0] = fMagData[altitude_index][0] * 1e-9 * tesla; // Bx
+  	  Bfield[1] = fMagData[altitude_index][1] * 1e-9 * tesla; // By
+  	  Bfield[2] = fMagData[altitude_index][2] * 1e-9 * tesla; // Bz
   	  Bfield[3] = 0; // Ex
   	  Bfield[4] = 0; // Ey
   	  Bfield[5] = 0; // Ez
@@ -124,15 +135,11 @@ void PlanetaryMagneticField::ReadMagneticFieldFile(G4String filename, G4double d
     throw std::runtime_error(errorMessage);
   }
 
-  int lineIndex = 0;
-  while(getline(filePtr, line))
+  for(int lineIndex = 0; lineIndex < 1000; lineIndex++)
   {
-    if(filePtr.good()){
     // Get line
     filePtr >> line;
 	
-    //std::cout << line << ',' << lineIndex << std::endl;
-
     // Instantiate stringstream from line
     std::stringstream s_ptr(line); 
     
@@ -140,7 +147,6 @@ void PlanetaryMagneticField::ReadMagneticFieldFile(G4String filename, G4double d
     //while(s_ptr.good())
     for(unsigned int i = 0; i < 3; i++)
     {
-      if(s_ptr.good()){
       // Parse line into words delimited by commas
       G4String word;
       getline(s_ptr, word, ',');
@@ -150,15 +156,9 @@ void PlanetaryMagneticField::ReadMagneticFieldFile(G4String filename, G4double d
     
       word_counter++;
     }
-      }
-    }
-    lineIndex++;
-    std::cout << lineIndex << std::endl;
   }
-
 
   // CLOSE
   filePtr.close();
-  std::cout << "Got to here!" << std::endl;
 
 }
