@@ -15,12 +15,16 @@ public:
 
   virtual void GetFieldValue(const G4double Point[4], 
 		                   G4double *Bfield) const override;
+  
+  void ReadMagneticFieldFile(G4String, G4double(*)[3]);
+
 private:
   G4double fDipoleMoment;
   G4double fGeomagLatitude;
   G4double fEarthRadius;
   G4double fJupiterRadius;
   G4int    fWhichPlanet;
+  G4double fMagData[1000][3];
 
 };
 

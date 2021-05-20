@@ -56,11 +56,13 @@ F03FieldMessenger::F03FieldMessenger(F03FieldSetup* fieldSetup)
   fFieldDir = new G4UIdirectory("/field/");
   fFieldDir->SetGuidance("F03 field tracking control.");
 
+  /*
   fStepperCmd = new G4UIcmdWithAnInteger("/field/setStepperType",this);
   fStepperCmd->SetGuidance("Select stepper type for magnetic field");
   fStepperCmd->SetParameterName("choice",true);
   fStepperCmd->SetDefaultValue(4);
   fStepperCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
+  */
 
   fUpdateCmd = new G4UIcmdWithoutParameter("/field/update",this);
   fUpdateCmd->SetGuidance("Update calorimeter geometry.");
@@ -98,8 +100,8 @@ F03FieldMessenger::~F03FieldMessenger()
 
 void F03FieldMessenger::SetNewValue( G4UIcommand* command, G4String newValue)
 {
-  if( command == fStepperCmd )
-    fEMfieldSetup->SetStepperType(fStepperCmd->GetNewIntValue(newValue));
+  //if( command == fStepperCmd )
+  //  fEMfieldSetup->SetStepperType(fStepperCmd->GetNewIntValue(newValue));
   if( command == fUpdateCmd )
     fEMfieldSetup->UpdateField();
   if( command == fMagFieldCmd )

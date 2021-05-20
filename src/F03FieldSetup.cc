@@ -79,7 +79,7 @@ F03FieldSetup::F03FieldSetup()
    fFieldMessenger(0)
 {
   fMagneticField      = new PlanetaryMagneticField(); 
-  fFieldMessenger     = new F03FieldMessenger(this);
+  //fFieldMessenger     = new F03FieldMessenger(this);
   fEquation           = new G4Mag_UsualEqRhs(fMagneticField);
 
 
@@ -113,13 +113,15 @@ void F03FieldSetup::UpdateField()
   delete fChordFinder;
   fChordFinder= nullptr;
 
+  std::cout << fStepperType << std::endl;
+
   G4cout<<"F03FieldSetup::UpdateField > The minimal step is equal to "
         << fMinStep/mm <<" mm"<<G4endl;
   G4cout<<"                            Stepper Type chosen = " << fStepperType
         << G4endl;
 
   // 2. Create the steppers ( Note: this also deletes the previous ones. )
-  SetStepper();
+  //SetStepper();
 
   // 3. Create the chord finder(s)
   fChordFinder = new G4ChordFinder(fMagneticField, fMinStep, fStepper);
