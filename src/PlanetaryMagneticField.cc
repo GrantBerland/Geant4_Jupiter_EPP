@@ -144,7 +144,6 @@ void PlanetaryMagneticField::ReadMagneticFieldFile(G4String filename, G4double d
     std::stringstream s_ptr(line); 
     
     word_counter = 0;
-    //while(s_ptr.good())
     for(unsigned int i = 0; i < 3; i++)
     {
       // Parse line into words delimited by commas

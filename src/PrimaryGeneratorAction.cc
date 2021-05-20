@@ -196,6 +196,12 @@ void PrimaryGeneratorAction::GenerateCXB(ParticleSample* r)
 
 }
 
+
+void PrimaryGeneratorAction::GenerateIons(ParticleSample* r)
+{
+
+}
+
 void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 {
   // Struct to store particle initial properties: 
@@ -219,6 +225,10 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
       GenerateCXB(r);
       break;
     
+    case(3):
+      GenerateIons(r);
+      break;
+
     default:
       throw std::invalid_argument("Enter a valid source type");
   }

@@ -65,6 +65,7 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
     void GenerateElectrons(ParticleSample*);
     void GenerateSolarSpectra(ParticleSample*);
     void GenerateCXB(ParticleSample*);
+    void GenerateIons(ParticleSample*);
     
     // Messenger methods
     void SetEnergy(G4double E0){ fE0 = E0;};
