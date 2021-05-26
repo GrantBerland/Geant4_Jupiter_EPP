@@ -95,7 +95,7 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
   switch(fDataCollectionType)
   {
     
-    case(0):  // Collects energy deposition per altitude
+    case(0):  // Collects electron energy deposition per altitude
     { 
     	// Gets energy delta of particle over step length
     	const G4double energyDep = step->GetPreStepPoint()->GetKineticEnergy() - 
@@ -120,11 +120,11 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
         }
       break;
     }
-    case(1):  // Collects particle trajectory (warning, lots of data!)
+    case(1):  // Collects particle (electron and photon) trajectory (warning, lots of data!)
     {
       G4String particleName = 
 	  track->GetDynamicParticle()->GetDefinition()->GetParticleName();
-      
+
       if(particleName == "e-")
       {
 
@@ -142,6 +142,7 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
 				sizeof(pos_array)/sizeof(*pos_array));
       
       }
+
       if(particleName == "gamma")
       {
 
@@ -171,13 +172,63 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
         
 	G4ThreeVector momentumDirection = track->GetMomentumDirection();
 
-	if(momentumDirection.z() > 0)
+	if(momentumDirection.z() > 0) // backscattered towards space
 	{
-
+	  // do tracking in some way
 	}
 
       }
       
+      break;
+    }
+    case(3): // collects electron energy histograms, photon trajectory
+    {
+      
+      G4String particleName = 
+	  track->GetDynamicParticle()->GetDefinition()->GetParticleName();
+
+      if(particleName == "e-")
+      {
+    	// Gets energy delta of particle over step length
+    	const G4double energyDep = step->GetPreStepPoint()->GetKineticEnergy() - 
+		step->GetPostStepPoint()->GetKineticEnergy();
+    	
+	if(energyDep > fEnergyThreshold_keV*keV)
+    	{
+	  // Gets altitude of particle
+      	  G4ThreeVector position = track->GetPosition();
+      	  G4double      zPos     = position.z();
+      
+          // Adds energy deposition to vector owned by RunAction, which is
+          // written to a results file per simulation run
+      	  G4int altitudeAddress = std::floor(500. + zPos/km);
+      
+	  // Thread lock this so only one thread can deposit energy into
+	  // the histogram at a time. Unlocks when l goes out of scope.
+	  if(altitudeAddress > 0 && altitudeAddress < 1000) 
+	  {
+	    LogEnergy(altitudeAddress, energyDep/keV);
+	  }
+ 
+        }
+      }
+      else if (particleName == "gamma")
+      {
+        
+          const G4double partEnergy = 
+		step->GetPreStepPoint()->GetKineticEnergy();	
+          G4ThreeVector position = track->GetPosition();
+          G4double pos_array[4] = { position.x()/m, 
+	      		          position.y()/m, 
+			          position.z()/m,
+				  partEnergy/keV};
+          // Writes 3D position vector to results file
+	  // owned by RunAction
+          fRunAction->fEnergyHist->WriteDirectlyToFile("photon_part_traj.txt", 
+			                             pos_array,
+				sizeof(pos_array)/sizeof(*pos_array));
+
+	}
       break;
     }
     default: 
