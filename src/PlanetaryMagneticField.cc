@@ -90,14 +90,13 @@ void PlanetaryMagneticField::GetFieldValue(const G4double Point[4],
 	
     case 1:
 
+	  // TODO: should probably log how often this is happening and where
+	  if(altitude_index > 1000) altitude_index = 1000;
+	  if(altitude_index < 0)    altitude_index = 0;
 
-	  if(altitude_index > 1000 || altitude_index < 0) 
-	    {throw std::invalid_argument("Particle way out of bounds??");}
-
-
-  	// fMagData[][0] - B_phi - Bx
-	// fMagData[][1] - B_theta - By
-	// fMagData[][2] - B_r - Bz
+  	  // fMagData[][0] - B_phi - Bx
+	  // fMagData[][1] - B_theta - By
+	  // fMagData[][2] - B_r - Bz
 
 	  Bfield[0] = fMagData[altitude_index][0] * 1e-9 * tesla; // Bx
   	  Bfield[1] = fMagData[altitude_index][1] * 1e-9 * tesla; // By

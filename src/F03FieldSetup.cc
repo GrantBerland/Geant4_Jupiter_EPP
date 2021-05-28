@@ -79,13 +79,13 @@ F03FieldSetup::F03FieldSetup()
    fFieldMessenger(0)
 {
   fMagneticField      = new PlanetaryMagneticField(); 
-  //fFieldMessenger     = new F03FieldMessenger(this);
+  fFieldMessenger     = new F03FieldMessenger(this);
   fEquation           = new G4Mag_UsualEqRhs(fMagneticField);
 
 
   // Default values
-  fMinStep     = 0.01*km ; 
-  fStepperType = 10;
+  fMinStep     = 0.1*km ; 
+  fStepperType = 9;
 
   fFieldManager = GetGlobalFieldManager();
 
@@ -120,7 +120,7 @@ void F03FieldSetup::UpdateField()
         << G4endl;
 
   // 2. Create the steppers ( Note: this also deletes the previous ones. )
-  //SetStepper();
+  SetStepper();
 
   // 3. Create the chord finder(s)
   fChordFinder = new G4ChordFinder(fMagneticField, fMinStep, fStepper);

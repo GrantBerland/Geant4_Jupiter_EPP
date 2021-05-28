@@ -121,12 +121,12 @@ int main(int argc,char** argv)
 
   // Fine grained control of thresholds for looping particles
   auto runAction= new RunAction();
-  runAction->SetWarningEnergy(   1.0 * keV );
+  runAction->SetWarningEnergy(   0.1 * keV );
               // Looping particles with E < ^ keV will be killed after 1 step
               //   with warning.
               // Looping particles with E > ^ keV will generate a warning.
-  runAction->SetImportantEnergy( 0.1 * keV );
-  runAction->SetNumberOfTrials( 30 );
+  runAction->SetImportantEnergy( 0.01 * keV );
+  runAction->SetNumberOfTrials( 100 );
               // Looping particles with E > 0.1 MeV will survive for up to
               //  30 'tracking' steps, and only be killed if they still loop.
   // Note: this mechanism overwrites the thresholds established by

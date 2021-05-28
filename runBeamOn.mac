@@ -20,7 +20,7 @@
 #/cuts/setMaxCutEnergy 50 eV
 
 # Set file name for atmosphere table
-/dataCollection/setAtmosFileName MSISE00_atmosphere.csv
+/dataCollection/setAtmosFileName Jupiter_atmosphere.csv
 
 /run/initialize
 
@@ -32,8 +32,12 @@
 
 # 0 - energy deposition per altitude (histogram)
 # 1 - particle trajectory (x, y, z, E) (warning, lots of data!!!)
-# 2 - tracks spectra of backscattered photons and particles
+# 2 - tracks spectra and 2D position info of backscattered photons and particles
+# 3 - electron histogram and photon trajectory
 /dataCollection/setDataCollection 0 
+
+# 10 - RungeKutta w/ PrinceDormand method, 7-8
+/field/setStepperType 10
 
 # 0 - electrons
 # 1 - solar X-ray spectrum
@@ -41,7 +45,7 @@
 /energy/setSourceType 0
 
 # Set file name for histogram or results file
-/dataCollection/setHistFileName energyHistogram_test2.txt
+/dataCollection/setHistFileName test1_jupiter.txt
 
 # 0 = sin(x) distribution
 # 1 = sin(2x) distribution
@@ -54,16 +58,16 @@
 # Loss cone at 300 km: 61.45 deg
 /energy/setMaximumPitchAngle 50.  # [deg]
 
-/energy/particleStartingAltitude 300.  # [km]
+/energy/particleStartingAltitude 500.  # [km]
 
 
 # 0 = exponential 
 # 1 = monoenergetic
 # 2 = energies are read in from energyFile.csv in [keV]
-/energy/setEnergyDistributionType 0 
+/energy/setEnergyDistributionType 1 
 
 # Either exponential folding energy or monoenergetic energy
 /energy/setFoldingEnergy 5000. # [keV]
 
 # Number of particles to run 
-/run/beamOn 10000
+/run/beamOn 100
