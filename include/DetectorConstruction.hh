@@ -37,6 +37,7 @@
 
 class G4VPhysicalVolume;
 class G4LogicalVolume;
+class G4Material;
 
 class G4UniformMagField;
 class F03FieldSetup;
@@ -58,6 +59,8 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4int GetMSIStableSize(G4String);
     void GetMSIStable(G4double(*)[8], G4String, unsigned int);
 
+    G4LogicalVolume* TestWorld(G4Material*);
+
   public:
     G4String           fAtmosphereFilename;
   private:
@@ -65,6 +68,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4int	       fTableSize;
     G4LogicalVolume*   fLogicWorld;
     G4Cache<F03FieldSetup*>    fEmFieldSetup;
+    G4double           fPI;
 
 };
 

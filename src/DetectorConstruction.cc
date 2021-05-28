@@ -37,6 +37,7 @@
 #include "G4Box.hh"
 #include "G4Tubs.hh"
 #include "G4Trd.hh"
+#include "G4Sphere.hh"
 #include "G4LogicalVolume.hh"
 #include "G4PVPlacement.hh"
 #include "G4SystemOfUnits.hh"
@@ -54,7 +55,8 @@ DetectorConstruction::DetectorConstruction()
   fAtmosphereFilename("Jupiter_atmosphere.csv"),
   fDetectorMessenger(),
   fTableSize(0),
-  fLogicWorld(0)
+  fLogicWorld(0),
+  fPI(3.14159265359)
 {
   fDetectorMessenger = new DetectorMessenger(this);
 }
@@ -71,7 +73,7 @@ DetectorConstruction::~DetectorConstruction()
 G4VPhysicalVolume* DetectorConstruction::Construct()
 {
   // Get nist material manager
-  //G4NistManager* nist = G4NistManager::Instance();
+  G4NistManager* nist = G4NistManager::Instance();
 
 
   // Material: Vacuum
@@ -101,7 +103,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
     new G4LogicalVolume(solidWorld,          //its solid
                         vacuum_material,     //its material
                         "World");            //its name
-
+  
   G4VPhysicalVolume* physWorld =
     new G4PVPlacement(0,                     //no rotation
                       G4ThreeVector(),       //at (0,0,0)
@@ -268,8 +270,20 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 		       false,
 		       i,
 		       checkOverlaps);
-
   }
+
+
+  /*
+  G4LogicalVolume* logicPlanet = TestWorld(vacuum_material);
+
+  new G4PVPlacement(0,
+	       G4ThreeVector(0.,0.,0.),
+	       logicPlanet,
+	       "planet",
+	       fLogicWorld,
+	       false,
+	       checkOverlaps);
+  */
 
   // always return the physical World
   return physWorld;
@@ -353,6 +367,30 @@ G4int DetectorConstruction::GetMSIStableSize(G4String filename)
   filePtr.close();
 
   return counter;
+}
+
+G4LogicalVolume* DetectorConstruction::TestWorld(G4Material* mat)
+{
+
+  G4double phiStart = 0.;
+  G4double phiEnd   = fPI/2;
+
+  G4double thetaStart = 0.;
+  G4double thetaEnd   = fPI/2.;
+
+  G4double rMax = 6997.*km;
+
+  G4VSolid* planet = new G4Sphere("planet",  // name
+		  		  rMax-1000.*km, // Rmin
+		  		  rMax,      // Rmax
+				  phiStart,  // phi min
+				  phiEnd,    // phi max
+				  thetaStart,// theta min
+				  thetaEnd); // theta max
+				  
+
+  return new G4LogicalVolume(planet, mat, "planet");
+
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
