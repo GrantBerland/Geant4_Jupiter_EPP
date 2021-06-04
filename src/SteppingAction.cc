@@ -50,6 +50,8 @@ SteppingAction::SteppingAction(EventAction* eventAction, RunAction* RuAct)
   fEventAction(eventAction),
   fRunAction(RuAct),
   fEnergyThreshold_keV(0.),
+  fPhotonWindowMin(250.),
+  fPhotonWindowMax(275.), 
   fDataCollectionType(0),
   fSteppingMessenger()
 {
@@ -85,7 +87,7 @@ SteppingAction::~SteppingAction()
   delete fSteppingMessenger;
 }
 
-//namespace{G4Mutex aMutex=G4MUTEX_INITIALIZER;}
+namespace{G4Mutex aMutex=G4MUTEX_INITIALIZER;}
 
 void SteppingAction::UserSteppingAction(const G4Step* step)
 {
@@ -186,6 +188,8 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
       
       G4String particleName = 
 	  track->GetDynamicParticle()->GetDefinition()->GetParticleName();
+	  
+      G4ThreeVector position = track->GetPosition();
 
       if(particleName == "e-")
       {
@@ -195,13 +199,10 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
     	
 	if(energyDep > fEnergyThreshold_keV*keV)
     	{
-	  // Gets altitude of particle
-      	  G4ThreeVector position = track->GetPosition();
-      	  G4double      zPos     = position.z();
       
           // Adds energy deposition to vector owned by RunAction, which is
           // written to a results file per simulation run
-      	  G4int altitudeAddress = std::floor(500. + zPos/km);
+      	  G4int altitudeAddress = std::floor(500. + position.z()/km);
       
 	  // Thread lock this so only one thread can deposit energy into
 	  // the histogram at a time. Unlocks when l goes out of scope.
@@ -212,19 +213,33 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
  
         }
       }
-      else if (particleName == "gamma")
+      
+      // Records data if photon is in a box within [250, 275] km
+      else if (particleName == "gamma" && 
+	       position.z()/km > 500. + fPhotonWindowMin && 
+	       position.z()/km < 500. + fPhotonWindowMax)
       {
         
           const G4double partEnergy = 
 		step->GetPreStepPoint()->GetKineticEnergy();	
-          G4ThreeVector position = track->GetPosition();
-          G4double pos_array[4] = { position.x()/m, 
-	      		          position.y()/m, 
-			          position.z()/m,
-				  partEnergy/keV};
+          
+	  G4ThreeVector momentumDirection = track->GetMomentumDirection();
+	  
+	  G4double pos_array[7] = {position.x()/m, 
+	      		           position.y()/m, 
+			           position.z()/m,
+				   momentumDirection.x(),
+				   momentumDirection.y(),
+				   momentumDirection.z(),
+				   partEnergy/keV};
+
           // Writes 3D position vector to results file
 	  // owned by RunAction
-          fRunAction->fEnergyHist->WriteDirectlyToFile("photon_part_traj.txt", 
+
+	  // Lock so threads don't overwrite into opened file
+	  G4AutoLock lock(&aMutex);
+          
+	  fRunAction->fEnergyHist->WriteDirectlyToFile("photon_traj_Jupiter.txt", 
 			                             pos_array,
 				sizeof(pos_array)/sizeof(*pos_array));
 

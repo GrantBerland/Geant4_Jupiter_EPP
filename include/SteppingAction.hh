@@ -53,7 +53,9 @@ class SteppingAction : public G4UserSteppingAction
 
     virtual ~SteppingAction();
 
-    void SetDataCollection(G4int type){ fDataCollectionType = type; }; 
+    void SetDataCollection(G4int     type){ fDataCollectionType = type; }; 
+    void SetMinPhotonWindow(G4double val ){ fPhotonWindowMin    = val;  }; 
+    void SetMaxPhotonWindow(G4double val ){ fPhotonWindowMax    = val;  }; 
     
     void LogEnergy(G4int, G4double);    
     
@@ -64,6 +66,9 @@ class SteppingAction : public G4UserSteppingAction
     EventAction*  fEventAction;
     RunAction*    fRunAction;
     G4double      fEnergyThreshold_keV;
+    G4double      fPhotonWindowMin;
+    G4double      fPhotonWindowMax;
+
     G4int         fDataCollectionType;
     SteppingActionMessenger* fSteppingMessenger;
 };

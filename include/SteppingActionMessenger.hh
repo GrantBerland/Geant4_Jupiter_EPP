@@ -26,6 +26,8 @@ private:
   SteppingAction* 	     fSteppingAction;
   G4UIdirectory*             fSteppingActionDir;
   G4UIcmdWithAnInteger*      fcmd;
+  G4UIcmdWithADouble*        fcmd2;
+  G4UIcmdWithADouble*        fcmd3;
 
 };
 
