@@ -94,6 +94,17 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
 
   G4Track* track = step->GetTrack();
   
+  if( std::isnan(step->GetPostStepPoint()->GetKineticEnergy()) )
+  {
+    G4cout << "Particle killed at: " << step->GetPreStepPoint()->GetKineticEnergy()/keV << 
+	    " keV , Process: " << step->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName() << G4endl;
+    
+    // kill it
+    track->SetTrackStatus(fStopAndKill);
+  }
+
+
+
   switch(fDataCollectionType)
   {
     
