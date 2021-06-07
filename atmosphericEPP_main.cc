@@ -95,10 +95,8 @@ int main(int argc,char** argv)
 #ifdef G4MULTITHREADED
   G4MTRunManager* runManager = new G4MTRunManager;
   runManager->SetNumberOfThreads(2);  // (Grant's computer)
-  std::cout << "Running MT" << std::endl;
 #else
   G4RunManager* runManager = new G4RunManager;
-  std::cout << "Running ST" << std::endl;
 #endif
 
 
@@ -106,10 +104,9 @@ int main(int argc,char** argv)
   G4PhysListFactory factory;
   G4VModularPhysicsList* physicsList = factory.GetReferencePhysList("QBBC");
   
-  //G4VModularPhysicsList* physicsList = new FTFP_BERT;
   physicsList->RegisterPhysics(new G4StepLimiterPhysics());
-
   physicsList->SetVerboseLevel(1);
+  
   runManager->SetUserInitialization(new DetectorConstruction());
   runManager->SetUserInitialization(physicsList);
   runManager->SetUserInitialization(new ActionInitialization());

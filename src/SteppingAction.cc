@@ -216,8 +216,8 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
       
       // Records data if photon is in a box within [250, 275] km
       else if (particleName == "gamma" && 
-	       position.z()/km > 500. + fPhotonWindowMin && 
-	       position.z()/km < 500. + fPhotonWindowMax)
+	       position.z()/km > -500. + fPhotonWindowMin && 
+	       position.z()/km < -500. + fPhotonWindowMax)
       {
         
           const G4double partEnergy = 

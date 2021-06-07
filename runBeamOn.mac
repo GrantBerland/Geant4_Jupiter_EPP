@@ -37,7 +37,7 @@
 /dataCollection/setDataCollection 0 
 
 # 10 - RungeKutta w/ PrinceDormand method, 7-8
-/field/setStepperType 10
+/field/setStepperType 9 
 
 # 0 - electrons
 # 1 - solar X-ray spectrum
@@ -54,9 +54,10 @@
 # 4 = particle pitch angles are read in from pitchAngleFile.csv in [deg]
 /energy/setPitchAngleDistributionType 2 
 
-# Loss cone at 1000 km: 49.4 deg
-# Loss cone at 300 km: 61.45 deg
+# Loss cone at 1000 km: 49.4 deg (Earth)
+# Loss cone at 300 km: 61.45 deg (Earth)
 /energy/setMaximumPitchAngle 50.  # [deg]
+
 
 /energy/particleStartingAltitude 500.  # [km]
 
@@ -67,7 +68,7 @@
 /energy/setEnergyDistributionType 1 
 
 # Either exponential folding energy or monoenergetic energy
-/energy/setFoldingEnergy 5000. # [keV]
+/energy/setFoldingEnergy 500. # [keV]
 
 # Number of particles to run 
-/run/beamOn 100
+/run/beamOn 1000
