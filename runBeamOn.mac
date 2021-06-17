@@ -58,9 +58,11 @@
 # Loss cone at 300 km: 61.45 deg (Earth)
 /energy/setMaximumPitchAngle 50.  # [deg]
 
-
 /energy/particleStartingAltitude 500.  # [km]
 
+
+/dataCollection/SetMinPhotonWindow 0.
+/dataCollection/SetMaxPhotonWindow 1000.
 
 # 0 = exponential 
 # 1 = monoenergetic
@@ -68,7 +70,7 @@
 /energy/setEnergyDistributionType 1 
 
 # Either exponential folding energy or monoenergetic energy
-/energy/setFoldingEnergy 500. # [keV]
+/energy/setFoldingEnergy 50. # [keV]
 
 # Number of particles to run 
 /run/beamOn 1000

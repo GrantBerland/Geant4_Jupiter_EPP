@@ -20,15 +20,10 @@ SteppingActionMessenger::SteppingActionMessenger(SteppingAction* step)
   fcmd->SetDefaultValue(0);
   fcmd->AvailableForStates(G4State_PreInit, G4State_Idle);
 
-  fcmd2 = new G4UIcmdWithADouble("/dataCollection/SetMinPhotonWindow",this);
-  fcmd2->SetParameterName("Minimum photon tracking altitude [km]", true);
+  fcmd2 = new G4UIcmdWithADouble("/dataCollection/SetPhotonWindow",this);
+  fcmd2->SetParameterName("Maximum photon tracking altitude [km]", true);
   fcmd2->SetDefaultValue(250.);
   fcmd2->AvailableForStates(G4State_PreInit, G4State_Idle);
-  
-  fcmd3 = new G4UIcmdWithADouble("/dataCollection/SetMaxPhotonWindow",this);
-  fcmd3->SetParameterName("Maximum photon tracking altitude [km]", true);
-  fcmd3->SetDefaultValue(275.);
-  fcmd3->AvailableForStates(G4State_PreInit, G4State_Idle);
 
 }
 
@@ -37,7 +32,6 @@ SteppingActionMessenger::~SteppingActionMessenger()
   delete fSteppingActionDir;
   delete fcmd;
   delete fcmd2;
-  delete fcmd3;
 }
 void SteppingActionMessenger::SetNewValue(G4UIcommand* command, 
 					    G4String newValue)
@@ -46,11 +40,7 @@ void SteppingActionMessenger::SetNewValue(G4UIcommand* command,
     fSteppingAction->SetDataCollection(std::stoi(newValue));
   }    	 
   if(command == fcmd2){
-    fSteppingAction->SetMinPhotonWindow(std::stod(newValue));
+    fSteppingAction->SetPhotonWindow(std::stod(newValue));
   }    	 
-  if(command == fcmd3){
-    fSteppingAction->SetMaxPhotonWindow(std::stod(newValue));
-  }    	 
-  
 
 }

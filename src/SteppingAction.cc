@@ -50,8 +50,7 @@ SteppingAction::SteppingAction(EventAction* eventAction, RunAction* RuAct)
   fEventAction(eventAction),
   fRunAction(RuAct),
   fEnergyThreshold_keV(0.),
-  fPhotonWindowMin(250.),
-  fPhotonWindowMax(275.), 
+  fPhotonWindow(250.),
   fDataCollectionType(0),
   fSteppingMessenger()
 {
@@ -102,8 +101,6 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
     // kill it
     track->SetTrackStatus(fStopAndKill);
   }
-
-
 
   switch(fDataCollectionType)
   {
@@ -227,8 +224,7 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
       
       // Records data if photon is in a box within [250, 275] km
       else if (particleName == "gamma" && 
-	       position.z()/km > -500. + fPhotonWindowMin && 
-	       position.z()/km < -500. + fPhotonWindowMax)
+	       position.z()/km > -500. + fPhotonWindow)
       {
         
           const G4double partEnergy = 
@@ -236,13 +232,13 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
           
 	  G4ThreeVector momentumDirection = track->GetMomentumDirection();
 	  
-	  G4double pos_array[7] = {position.x()/m, 
+	  G4double pos_array[6] = {position.x()/m, 
 	      		           position.y()/m, 
 			           position.z()/m,
-				   momentumDirection.x(),
-				   momentumDirection.y(),
-				   momentumDirection.z(),
-				   partEnergy/keV};
+				   momentumDirection.x() * partEnergy/keV,
+				   momentumDirection.y() * partEnergy/keV,
+				   momentumDirection.z() * partEnergy/keV
+	  			  };
 
           // Writes 3D position vector to results file
 	  // owned by RunAction
@@ -253,6 +249,10 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
 	  fRunAction->fEnergyHist->WriteDirectlyToFile("photon_traj_Jupiter.txt", 
 			                             pos_array,
 				sizeof(pos_array)/sizeof(*pos_array));
+
+
+          // Kill it after recording data
+          track->SetTrackStatus(fStopAndKill);
 
 	}
       break;
