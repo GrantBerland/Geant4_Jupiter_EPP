@@ -51,6 +51,7 @@ SteppingAction::SteppingAction(EventAction* eventAction, RunAction* RuAct)
   fRunAction(RuAct),
   fEnergyThreshold_keV(0.),
   fPhotonWindow(250.),
+  fPhotonFilename(),
   fDataCollectionType(0),
   fSteppingMessenger()
 {
@@ -147,7 +148,7 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
 				  partEnergy/keV};
         // Writes 3D position vector to results file
 	// owned by RunAction
-        fRunAction->fEnergyHist->WriteDirectlyToFile("part_traj.txt", 
+        fRunAction->fEnergyHist->WriteDirectlyToFile(fPhotonFilename, 
 			                             pos_array,
 				sizeof(pos_array)/sizeof(*pos_array));
       
@@ -165,7 +166,7 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
 				  partEnergy/keV};
         // Writes 3D position vector to results file
 	// owned by RunAction
-        fRunAction->fEnergyHist->WriteDirectlyToFile("photon_part_traj.txt", 
+        fRunAction->fEnergyHist->WriteDirectlyToFile(fPhotonFilename, 
 			                             pos_array,
 				sizeof(pos_array)/sizeof(*pos_array));
       
@@ -222,7 +223,7 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
         }
       }
       
-      // Records data if photon is in a box within [250, 275] km
+      // Records data if photon is above fPhotonWindow altitude 
       else if (particleName == "gamma" && 
 	       position.z()/km > -500. + fPhotonWindow)
       {
@@ -240,13 +241,11 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
 				   momentumDirection.z() * partEnergy/keV
 	  			  };
 
-          // Writes 3D position vector to results file
-	  // owned by RunAction
 
 	  // Lock so threads don't overwrite into opened file
 	  G4AutoLock lock(&aMutex);
           
-	  fRunAction->fEnergyHist->WriteDirectlyToFile("photon_traj_Jupiter.txt", 
+	  fRunAction->fEnergyHist->WriteDirectlyToFile(fPhotonFilename, 
 			                             pos_array,
 				sizeof(pos_array)/sizeof(*pos_array));
 
