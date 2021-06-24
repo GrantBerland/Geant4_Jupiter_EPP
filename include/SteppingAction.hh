@@ -59,6 +59,7 @@ class SteppingAction : public G4UserSteppingAction
     void SetPhotonFilename(G4String name){ fPhotonFilename = name; }; 
     
     void LogEnergy(G4int, G4double);    
+    void AddCountToHistogram(G4int);
     
     // method from the base class
     virtual void UserSteppingAction(const G4Step*);

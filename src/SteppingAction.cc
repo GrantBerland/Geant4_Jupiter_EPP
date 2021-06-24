@@ -63,7 +63,7 @@ SteppingAction::SteppingAction(EventAction* eventAction, RunAction* RuAct)
     
     case(0):
       G4cout << "Energy deposition being recorded...";
-      fRunAction->fEnergyHist->InitializeHistogram();
+      fRunAction->fEnergyHist1->InitializeHistogram();
       G4cout << "Histogram initialized!" << G4endl;
       break;
     
@@ -148,7 +148,7 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
 				  partEnergy/keV};
         // Writes 3D position vector to results file
 	// owned by RunAction
-        fRunAction->fEnergyHist->WriteDirectlyToFile(fPhotonFilename, 
+        fRunAction->fEnergyHist1->WriteDirectlyToFile(fPhotonFilename, 
 			                             pos_array,
 				sizeof(pos_array)/sizeof(*pos_array));
       
@@ -166,7 +166,7 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
 				  partEnergy/keV};
         // Writes 3D position vector to results file
 	// owned by RunAction
-        fRunAction->fEnergyHist->WriteDirectlyToFile(fPhotonFilename, 
+        fRunAction->fEnergyHist1->WriteDirectlyToFile(fPhotonFilename, 
 			                             pos_array,
 				sizeof(pos_array)/sizeof(*pos_array));
       
@@ -206,12 +206,20 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
     	const G4double energyDep = step->GetPreStepPoint()->GetKineticEnergy() - 
 		step->GetPostStepPoint()->GetKineticEnergy();
     	
+	
+	G4TrackVector* secondaries = track->GimmeSecondaries();
+	
+	
+	
+	// Check if bremsstrahlung photon produced
+	G4bool bremsstrahlungProduced = 0;
+      	  
+	G4int altitudeAddress = std::floor(500. + position.z()/km);
+
 	if(energyDep > fEnergyThreshold_keV*keV)
     	{
-      
           // Adds energy deposition to vector owned by RunAction, which is
           // written to a results file per simulation run
-      	  G4int altitudeAddress = std::floor(500. + position.z()/km);
       
 	  // Thread lock this so only one thread can deposit energy into
 	  // the histogram at a time. Unlocks when l goes out of scope.
@@ -219,8 +227,14 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
 	  {
 	    LogEnergy(altitudeAddress, energyDep/keV);
 	  }
- 
         }
+      
+        if(bremsstrahlungProduced)
+        {
+	  // Get histogram of bremsstrahlung production with altitude
+	  AddCountToHistogram(altitudeAddress);
+        }
+      
       }
       
       // Records data if photon is above fPhotonWindow altitude 
@@ -245,7 +259,7 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
 	  // Lock so threads don't overwrite into opened file
 	  G4AutoLock lock(&aMutex);
           
-	  fRunAction->fEnergyHist->WriteDirectlyToFile(fPhotonFilename, 
+	  fRunAction->fEnergyHist1->WriteDirectlyToFile(fPhotonFilename, 
 			                             pos_array,
 				sizeof(pos_array)/sizeof(*pos_array));
 
@@ -268,9 +282,14 @@ void SteppingAction::LogEnergy(G4int histogramAddress, G4double energy)
 {
 
   //G4AutoLock lock(&aMutex);
-
-  fRunAction->fEnergyHist->AddCountToBin(histogramAddress, energy/keV);
+  fRunAction->fEnergyHist1->AddCountToBin(histogramAddress, energy/keV);
 
 }
 
+void SteppingAction::AddCountToHistogram(G4int histogramAddress)
+{
+
+  fRunAction->fEnergyHist2->AddCountToBin(histogramAddress, 1);
+
+}
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
