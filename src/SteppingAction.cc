@@ -58,6 +58,9 @@ SteppingAction::SteppingAction(EventAction* eventAction, RunAction* RuAct)
 
   fSteppingMessenger = new SteppingActionMessenger(this);
 
+
+  fDataCollectionType = 3;
+
   switch(fDataCollectionType)
   {
     
@@ -75,8 +78,8 @@ SteppingAction::SteppingAction(EventAction* eventAction, RunAction* RuAct)
       G4cout << "Particle backscatter flux being recorded..." << G4endl;
       break;
     case(3):
-
-      G4cout << "Total energy deposition, photon statistics, and bremsstrahlung production being recorded...";
+      G4cout << "Total energy deposition, photon statistics, and " <<
+	        "bremsstrahlung production being recorded...";
       fRunAction->fEnergyHist1->InitializeHistogram();
       fRunAction->fEnergyHist2->InitializeHistogram();
       G4cout << "histograms initialized!" << G4endl;
@@ -86,7 +89,7 @@ SteppingAction::SteppingAction(EventAction* eventAction, RunAction* RuAct)
       throw std::invalid_argument("No data being recorded, exiting...");
       break;
   }
-
+      
 }
 
 SteppingAction::~SteppingAction()
@@ -214,13 +217,14 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
 		step->GetPostStepPoint()->GetKineticEnergy();
     	
 	
-	G4int altitudeAddress = std::floor(500. + position.z()/km);
+	G4int altitudeAddress;
 
 	if(energyDep > fEnergyThreshold_keV*keV)
     	{
           // Adds energy deposition to vector owned by RunAction, which is
           // written to a results file per simulation run
-      
+          altitudeAddress = std::floor(500. + position.z()/km);
+	  
 	  // Thread lock this so only one thread can deposit energy into
 	  // the histogram at a time. Unlocks when l goes out of scope.
 	  if(altitudeAddress > 0 && altitudeAddress < 1000) 
@@ -231,6 +235,9 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
       
         if(step->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName() == "eBrem")
         {
+	  
+          altitudeAddress = std::floor(500. + position.z()/km);		
+		
 	  // Get histogram of bremsstrahlung production with altitude
 	  AddCountToHistogram(altitudeAddress);
         }

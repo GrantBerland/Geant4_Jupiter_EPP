@@ -120,7 +120,7 @@ void RunAction::EndOfRunAction(const G4Run*)
   
   G4cout << "Writing results to histogram...";
   fEnergyHist1->WriteHistogramToFile(fHistogramFileName);
-  fEnergyHist2->WriteHistogramToFile("photon_" + fHistogramFileName);
+  fEnergyHist2->WriteHistogramToFile("eBrem_" + fHistogramFileName);
   G4cout << "complete!" << G4endl;
 }
 

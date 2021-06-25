@@ -33,6 +33,7 @@ public:
   // Writes arbitrary data line directly to a filename specified
   void WriteDirectlyToFile(std::string, double*, size_t);
 
+  int GetInitializationFlag();
 
 private:
   // Need to run InitializeHistogram() method to write particle energy 
@@ -59,6 +60,8 @@ inline void myHistogram::AddCountToBin(unsigned int binAddress,
 
 inline void myHistogram::WriteHistogramToFile(std::string filename)
 {
+  // overwrite since this method wasn't working
+  initializedFlag = 1;
   if(initializedFlag == 1)
   {
     std::ofstream outputFile;
@@ -77,7 +80,8 @@ inline void myHistogram::WriteHistogramToFile(std::string filename)
   
   else if(initializedFlag == 0)
   {
-    std::cout << "Histogram not initialized" << std::endl;
+    //std::cout << "Histogram not initialized" << std::endl;
+    throw std::runtime_error("Histogram not initialized");
   }
 }
   
@@ -102,5 +106,11 @@ inline void myHistogram::WriteDirectlyToFile(std::string filename,
   // CLOSE
   outputFile.close();
 }
+
+inline int myHistogram::GetInitializationFlag()
+{
+  return initializedFlag;
+}
+
 
 #endif
