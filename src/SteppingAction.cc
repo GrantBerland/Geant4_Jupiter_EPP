@@ -62,9 +62,9 @@ SteppingAction::SteppingAction(EventAction* eventAction, RunAction* RuAct)
   {
     
     case(0):
-      G4cout << "Energy deposition being recorded...";
-      fRunAction->fEnergyHist1->InitializeHistogram();
-      G4cout << "Histogram initialized!" << G4endl;
+      G4cout << "energy deposition being recorded...";
+      frunaction->fenergyhist1->InitializeHistogram();
+      G4cout << "histogram initialized!" << G4endl;
       break;
     
     case(1):
@@ -73,6 +73,13 @@ SteppingAction::SteppingAction(EventAction* eventAction, RunAction* RuAct)
     
     case(2):
       G4cout << "Particle backscatter flux being recorded..." << G4endl;
+      break;
+    case(3):
+
+      G4cout << "Total energy deposition, photon statistics, and bremsstrahlung production being recorded...";
+      frunaction->fenergyhist1->InitializeHistogram();
+      frunaction->fenergyhist2->InitializeHistogram();
+      G4cout << "histograms initialized!" << G4endl;
       break;
 
     default:
@@ -199,7 +206,7 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
 	  track->GetDynamicParticle()->GetDefinition()->GetParticleName();
 	  
       G4ThreeVector position = track->GetPosition();
-
+	
       if(particleName == "e-")
       {
     	// Gets energy delta of particle over step length
@@ -207,13 +214,6 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
 		step->GetPostStepPoint()->GetKineticEnergy();
     	
 	
-	G4TrackVector* secondaries = track->GimmeSecondaries();
-	
-	
-	
-	// Check if bremsstrahlung photon produced
-	G4bool bremsstrahlungProduced = 0;
-      	  
 	G4int altitudeAddress = std::floor(500. + position.z()/km);
 
 	if(energyDep > fEnergyThreshold_keV*keV)
@@ -229,7 +229,7 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
 	  }
         }
       
-        if(bremsstrahlungProduced)
+        if(step->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName() == "eBrem")
         {
 	  // Get histogram of bremsstrahlung production with altitude
 	  AddCountToHistogram(altitudeAddress);
@@ -246,7 +246,8 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
 		step->GetPreStepPoint()->GetKineticEnergy();	
           
 	  G4ThreeVector momentumDirection = track->GetMomentumDirection();
-	  
+
+	  // (x,y,z) position and energy-encoded momentum direction (E*px, E*py, E*pz) is tracked
 	  G4double pos_array[6] = {position.x()/m, 
 	      		           position.y()/m, 
 			           position.z()/m,
@@ -264,14 +265,14 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
 				sizeof(pos_array)/sizeof(*pos_array));
 
 
-          // Kill it after recording data
+          // Kill photon after recording data
           track->SetTrackStatus(fStopAndKill);
 
 	}
       break;
     }
     default: 
-      throw std::runtime_error("Enter a valid data collection type!");
+      throw std::invalid_argument("Enter a valid data collection type!");
       break;
   
   }
