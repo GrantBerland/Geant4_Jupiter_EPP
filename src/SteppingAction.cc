@@ -63,7 +63,7 @@ SteppingAction::SteppingAction(EventAction* eventAction, RunAction* RuAct)
     
     case(0):
       G4cout << "energy deposition being recorded...";
-      frunaction->fenergyhist1->InitializeHistogram();
+      fRunAction->fEnergyHist1->InitializeHistogram();
       G4cout << "histogram initialized!" << G4endl;
       break;
     
@@ -77,8 +77,8 @@ SteppingAction::SteppingAction(EventAction* eventAction, RunAction* RuAct)
     case(3):
 
       G4cout << "Total energy deposition, photon statistics, and bremsstrahlung production being recorded...";
-      frunaction->fenergyhist1->InitializeHistogram();
-      frunaction->fenergyhist2->InitializeHistogram();
+      fRunAction->fEnergyHist1->InitializeHistogram();
+      fRunAction->fEnergyHist2->InitializeHistogram();
       G4cout << "histograms initialized!" << G4endl;
       break;
 
