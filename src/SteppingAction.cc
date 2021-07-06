@@ -51,19 +51,23 @@ SteppingAction::SteppingAction(EventAction* eventAction, RunAction* RuAct)
   fRunAction(RuAct),
   fEnergyThreshold_keV(0.),
   fPhotonWindow(250.),
+  fPhotonFilename(),
   fDataCollectionType(0),
   fSteppingMessenger()
 {
 
   fSteppingMessenger = new SteppingActionMessenger(this);
 
+
+  fDataCollectionType = 3;
+
   switch(fDataCollectionType)
   {
     
     case(0):
-      G4cout << "Energy deposition being recorded...";
-      fRunAction->fEnergyHist->InitializeHistogram();
-      G4cout << "Histogram initialized!" << G4endl;
+      G4cout << "energy deposition being recorded...";
+      fRunAction->fEnergyHist1->InitializeHistogram();
+      G4cout << "histogram initialized!" << G4endl;
       break;
     
     case(1):
@@ -73,12 +77,19 @@ SteppingAction::SteppingAction(EventAction* eventAction, RunAction* RuAct)
     case(2):
       G4cout << "Particle backscatter flux being recorded..." << G4endl;
       break;
+    case(3):
+      G4cout << "Total energy deposition, photon statistics, and " <<
+	        "bremsstrahlung production being recorded...";
+      fRunAction->fEnergyHist1->InitializeHistogram();
+      fRunAction->fEnergyHist2->InitializeHistogram();
+      G4cout << "histograms initialized!" << G4endl;
+      break;
 
     default:
       throw std::invalid_argument("No data being recorded, exiting...");
       break;
   }
-
+      
 }
 
 SteppingAction::~SteppingAction()
@@ -147,7 +158,7 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
 				  partEnergy/keV};
         // Writes 3D position vector to results file
 	// owned by RunAction
-        fRunAction->fEnergyHist->WriteDirectlyToFile("part_traj.txt", 
+        fRunAction->fEnergyHist1->WriteDirectlyToFile(fPhotonFilename, 
 			                             pos_array,
 				sizeof(pos_array)/sizeof(*pos_array));
       
@@ -165,7 +176,7 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
 				  partEnergy/keV};
         // Writes 3D position vector to results file
 	// owned by RunAction
-        fRunAction->fEnergyHist->WriteDirectlyToFile("photon_part_traj.txt", 
+        fRunAction->fEnergyHist1->WriteDirectlyToFile(fPhotonFilename, 
 			                             pos_array,
 				sizeof(pos_array)/sizeof(*pos_array));
       
@@ -198,31 +209,42 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
 	  track->GetDynamicParticle()->GetDefinition()->GetParticleName();
 	  
       G4ThreeVector position = track->GetPosition();
-
+	
       if(particleName == "e-")
       {
     	// Gets energy delta of particle over step length
     	const G4double energyDep = step->GetPreStepPoint()->GetKineticEnergy() - 
 		step->GetPostStepPoint()->GetKineticEnergy();
     	
+	
+	G4int altitudeAddress;
+
 	if(energyDep > fEnergyThreshold_keV*keV)
     	{
-      
           // Adds energy deposition to vector owned by RunAction, which is
           // written to a results file per simulation run
-      	  G4int altitudeAddress = std::floor(500. + position.z()/km);
-      
+          altitudeAddress = std::floor(500. + position.z()/km);
+	  
 	  // Thread lock this so only one thread can deposit energy into
 	  // the histogram at a time. Unlocks when l goes out of scope.
 	  if(altitudeAddress > 0 && altitudeAddress < 1000) 
 	  {
 	    LogEnergy(altitudeAddress, energyDep/keV);
 	  }
- 
         }
+      
+        if(step->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName() == "eBrem")
+        {
+	  
+          altitudeAddress = std::floor(500. + position.z()/km);		
+		
+	  // Get histogram of bremsstrahlung production with altitude
+	  AddCountToHistogram(altitudeAddress);
+        }
+      
       }
       
-      // Records data if photon is in a box within [250, 275] km
+      // Records data if photon is above fPhotonWindow altitude 
       else if (particleName == "gamma" && 
 	       position.z()/km > -500. + fPhotonWindow)
       {
@@ -231,7 +253,8 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
 		step->GetPreStepPoint()->GetKineticEnergy();	
           
 	  G4ThreeVector momentumDirection = track->GetMomentumDirection();
-	  
+
+	  // (x,y,z) position and energy-encoded momentum direction (E*px, E*py, E*pz) is tracked
 	  G4double pos_array[6] = {position.x()/m, 
 	      		           position.y()/m, 
 			           position.z()/m,
@@ -240,25 +263,23 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
 				   momentumDirection.z() * partEnergy/keV
 	  			  };
 
-          // Writes 3D position vector to results file
-	  // owned by RunAction
 
 	  // Lock so threads don't overwrite into opened file
 	  G4AutoLock lock(&aMutex);
           
-	  fRunAction->fEnergyHist->WriteDirectlyToFile("photon_traj_Jupiter.txt", 
+	  fRunAction->fEnergyHist1->WriteDirectlyToFile(fPhotonFilename, 
 			                             pos_array,
 				sizeof(pos_array)/sizeof(*pos_array));
 
 
-          // Kill it after recording data
+          // Kill photon after recording data
           track->SetTrackStatus(fStopAndKill);
 
 	}
       break;
     }
     default: 
-      throw std::runtime_error("Enter a valid data collection type!");
+      throw std::invalid_argument("Enter a valid data collection type!");
       break;
   
   }
@@ -269,9 +290,14 @@ void SteppingAction::LogEnergy(G4int histogramAddress, G4double energy)
 {
 
   //G4AutoLock lock(&aMutex);
-
-  fRunAction->fEnergyHist->AddCountToBin(histogramAddress, energy/keV);
+  fRunAction->fEnergyHist1->AddCountToBin(histogramAddress, energy/keV);
 
 }
 
+void SteppingAction::AddCountToHistogram(G4int histogramAddress)
+{
+
+  fRunAction->fEnergyHist2->AddCountToBin(histogramAddress, 1);
+
+}
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

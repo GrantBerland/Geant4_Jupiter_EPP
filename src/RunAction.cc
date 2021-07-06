@@ -61,14 +61,16 @@ RunAction::RunAction()
   fNumberOfTrials  =   15;  // Arbitrary
 
   fRunActionMessenger     = new RunActionMessenger(this); 
-  fEnergyHist             = new myHistogram();
+  fEnergyHist1             = new myHistogram();
+  fEnergyHist2             = new myHistogram();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 RunAction::~RunAction()
 {
-  delete fEnergyHist;
+  delete fEnergyHist1;
+  delete fEnergyHist2;
   delete fRunActionMessenger;
 }
 
@@ -117,7 +119,8 @@ void RunAction::EndOfRunAction(const G4Run*)
 {
   
   G4cout << "Writing results to histogram...";
-  fEnergyHist->WriteHistogramToFile(fHistogramFileName);
+  fEnergyHist1->WriteHistogramToFile(fHistogramFileName);
+  fEnergyHist2->WriteHistogramToFile("eBrem_" + fHistogramFileName);
   G4cout << "complete!" << G4endl;
 }
 
