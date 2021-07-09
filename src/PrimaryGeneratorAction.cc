@@ -45,6 +45,8 @@
 #include <math.h>
 
 
+G4int PrimaryGeneratorAction::fFileLineCounter = 1;
+
 PrimaryGeneratorAction::PrimaryGeneratorAction()
 : G4VUserPrimaryGeneratorAction(),
   fParticleGun(0),
@@ -58,6 +60,7 @@ PrimaryGeneratorAction::PrimaryGeneratorAction()
   fRad2Deg(180. / 3.14159265359),
   fSourceType(0)
 {
+
   fParticleGun  = new G4ParticleGun();
   
   fPrimaryMessenger = new PrimaryGeneratorMessenger(this);
@@ -174,10 +177,19 @@ void PrimaryGeneratorAction::GenerateElectrons(ParticleSample* r)
       	     // for stochastic collocation methods
       
       inputFile.open("energyFile.csv", std::ios_base::in);
-      inputFile >> word;
-	
+      
+      // Goto line fFileLineCounter
+      for(int i = 0; i < fFileLineCounter; i++)
+      {
+        getline(inputFile, word);
+      }
+
+      // Set energy in keV
       r->energy = std::stod(word) * keV;
 
+      // Increment file line counter
+      fFileLineCounter++;
+      
       inputFile.close();
       break;
     

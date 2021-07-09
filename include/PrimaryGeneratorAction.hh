@@ -88,6 +88,7 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
     G4double	    fPI;
     G4double	    fRad2Deg;
     G4int           fSourceType;
+    static G4int    fFileLineCounter;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
