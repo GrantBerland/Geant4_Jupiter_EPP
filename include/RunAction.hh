@@ -67,7 +67,7 @@ class RunAction : public G4UserRunAction
     virtual void BeginOfRunAction(const G4Run*);
     virtual void   EndOfRunAction(const G4Run*);
 
-    void SetHistFileName(G4String name){fHistogramFileName=name;};
+    void SetHistFileName(G4String name){fHistogramFileName=name;}
 
     // Helper method to change the Transportation's 'looper' parameters 
     void ChangeLooperParameters(const G4ParticleDefinition* particleDef );
@@ -81,9 +81,11 @@ class RunAction : public G4UserRunAction
     void     SetNumberOfTrials( G4int val )   { fNumberOfTrials  = val; }
     void     SetWarningEnergy( double val )   { fWarningEnergy   = val; }
     void     SetImportantEnergy( double val ) { fImportantEnergy = val; }   
+    void     IncrementKilledParticleCount()   { fRunActionPartCount++;  }
     G4int    GetNumberOfTrials()  { return fNumberOfTrials; }
     G4double GetWarningEnergy()   { return fWarningEnergy; }
     G4double GetImportantEnergy() { return fImportantEnergy; } 
+    G4int    GetKilledParticleCount(){ return fRunActionPartCount; }
 
   public:
     myHistogram*           fEnergyHist1;
@@ -92,7 +94,8 @@ class RunAction : public G4UserRunAction
   private:
     RunActionMessenger*    fRunActionMessenger;
     G4String 		   fHistogramFileName;
-  
+
+    G4int                  fRunActionPartCount;
     // Values for initialising 'loopers' parameters of Transport process
     G4int    fNumberOfTrials  =  0;    // Default will not overwrite
     G4double fWarningEnergy   = -1.0;  // Default values - non operational 

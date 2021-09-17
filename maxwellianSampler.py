@@ -16,6 +16,7 @@ else:
 
 # Sample Singhal et al., 1992 "Maxwellian" distribution of
 # f ~ E exp(-E/E0)
+# Sample = Real[ -E0 * (lambertW_-1 branch( U[0, 1]/e) + 1) ]
 sampler = np.real(-E0*(lambertw(-np.random.rand(nParts)/np.exp(1), -1) + 1))
 
 # Write sampled values to be read in by Geant program

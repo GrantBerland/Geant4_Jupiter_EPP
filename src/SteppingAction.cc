@@ -54,6 +54,7 @@ SteppingAction::SteppingAction(EventAction* eventAction, RunAction* RuAct)
   fPhotonFilename(),
   fDataCollectionType(0),
   fSteppingMessenger()
+
 {
 
   fSteppingMessenger = new SteppingActionMessenger(this);
@@ -111,6 +112,10 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
     
     // kill it
     track->SetTrackStatus(fStopAndKill);
+    fRunAction->IncrementKilledParticleCount();
+
+    G4cout << "Particle killed!" << G4endl;
+  
   }
 
   switch(fDataCollectionType)

@@ -63,6 +63,8 @@ RunAction::RunAction()
   fRunActionMessenger     = new RunActionMessenger(this); 
   fEnergyHist1             = new myHistogram();
   fEnergyHist2             = new myHistogram();
+
+  fRunActionPartCount = 0;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -122,6 +124,9 @@ void RunAction::EndOfRunAction(const G4Run*)
   fEnergyHist1->WriteHistogramToFile(fHistogramFileName);
   fEnergyHist2->WriteHistogramToFile("eBrem_" + fHistogramFileName);
   G4cout << "complete!" << G4endl;
+
+  G4cout << "Killed particle count: " << this->GetKilledParticleCount() << G4endl;
+
 }
 
 
