@@ -1,0 +1,19 @@
+
+# Set low energy EM processes, including fluorescence
+/process/em/fluo false 
+/process/em/auger false
+/process/em/augerCascade false
+/process/em/pixe false 
+/process/em/deexcitationIgnoreCut false
+
+
+/dataCollection/setAtmosFileName Jupiter_atmosphere.csv
+
+/run/initialize
+
+/control/verbose 0
+/run/verbose 0
+/event/verbose 0
+/tracking/verbose 0
+
+/control/foreach loopCall.mac E0 100 

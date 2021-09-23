@@ -23,17 +23,15 @@
 # 2 = isotropic PAD
 # 3 = all particles have pitch angle = maximum pitch angle, set above
 # 4 = particle pitch angles are read in from pitchAngleFile.csv in [deg]
-/energy/setPitchAngleDistributionType 2 
+/energy/setPitchAngleDistributionType 0 
 
 # Loss cone at 1000 km: 49.4 deg (Earth)
 # Loss cone at 300 km: 61.45 deg (Earth)
-/energy/setMaximumPitchAngle 50.  # [deg]
+/energy/setMaximumPitchAngle 68.  # [deg]
 
 /energy/particleStartingAltitude 500.  # [km A1B]
 
 /dataCollection/SetPhotonWindow 500.   # [km A1B]
-
-/control/shell maxSampler.py {E0} 1000000
 
 # 0 = exponential 
 # 1 = monoenergetic
@@ -44,4 +42,4 @@
 /energy/setFoldingEnergy {E0} # [keV]
 
 # Number of particles to run 
-/run/beamOn 1000000
+/run/beamOn 10000000
