@@ -86,16 +86,18 @@ void PrimaryGeneratorAction::GenerateElectrons(ParticleSample* r)
 
   G4String word;
   std::ifstream inputFile; 
-
+  
   // Initial position RV's
   G4double theta = G4UniformRand() * 2. * 3.1415926; // u ~ Unif[0, 2 pi)
   G4double radialPosition = G4UniformRand();  // [0, 1)
   G4double diskRadius = 400.*km;
 
   // Random uniform sampling on a circular area
-  r->xPos = diskRadius * std::sqrt(radialPosition) * std::cos(theta);
-  r->yPos = diskRadius * std::sqrt(radialPosition) * std::sin(theta);
-  
+  //r->xPos = diskRadius * std::sqrt(radialPosition) * std::cos(theta);
+  //r->yPos = diskRadius * std::sqrt(radialPosition) * std::sin(theta);
+  r->xPos = 0;
+  r->yPos = 0;
+
   // Subtraction due to coordinate axis location in middle of volume
   r->zPos = (fInitialParticleAlt - 500)*km;
 
@@ -115,19 +117,26 @@ void PrimaryGeneratorAction::GenerateElectrons(ParticleSample* r)
   {
   
     case(0): 
+    {
       // Sine distribution inverse CDF sampling
       // pitch angle ~ sine[0, maxPitchAngle]
-      pitchAngle = std::acos(G4UniformRand()*2.-1.)
-	      /3.141592654/maxPitchAngle;
+      pitchAngle = 4 * maxPitchAngle / fPI * std::asin(std::sqrt(G4UniformRand()/2.));
+      
       break;
-   
+    }
     case(1):
-      // Sine(2x) distribution inverse CDF sampling
-      // pitch angle ~ sine[0, maxPitchAngle/2]
-      pitchAngle = std::acos(G4UniformRand()*2.-1.)
-	      /3.141592654/maxPitchAngle/2.;
-      break;
+      {
+      // Sin^2(x) distribution rejection sampling
+      // pitch angle ~ sine^2[0, maxPitchAngle]
+      do
+      {
+        pitchAngle = G4UniformRand() * maxPitchAngle; // U[0 , alpha_LC]
+      }
+      while( (G4UniformRand() * 2.) >= 
+		  2. / maxPitchAngle * std::pow(std::sin(pitchAngle * fPI / (2. * maxPitchAngle) ), 2) );
 
+      break;
+      }
     case(2):
       // Isotropic distribution in pitch angle 
       // pitch angle ~ U[0, maxPitchAngle]
