@@ -93,10 +93,10 @@ void PrimaryGeneratorAction::GenerateElectrons(ParticleSample* r)
   G4double diskRadius = 400.*km;
 
   // Random uniform sampling on a circular area
-  //r->xPos = diskRadius * std::sqrt(radialPosition) * std::cos(theta);
-  //r->yPos = diskRadius * std::sqrt(radialPosition) * std::sin(theta);
-  r->xPos = 0;
-  r->yPos = 0;
+  r->xPos = diskRadius * std::sqrt(radialPosition) * std::cos(theta);
+  r->yPos = diskRadius * std::sqrt(radialPosition) * std::sin(theta);
+  //r->xPos = 0;
+  //r->yPos = 0;
 
   // Subtraction due to coordinate axis location in middle of volume
   r->zPos = (fInitialParticleAlt - 500)*km;
