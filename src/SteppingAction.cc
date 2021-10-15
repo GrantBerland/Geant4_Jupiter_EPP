@@ -114,8 +114,19 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
     track->SetTrackStatus(fStopAndKill);
     fRunAction->IncrementKilledParticleCount();
 
-    G4cout << "Particle killed!" << G4endl;
+    G4cout << "Particle killed! (negative energy)" << G4endl;
   
+  }
+
+  G4double time = track->GetProperTime();
+  
+  if(time/second > 1)
+  {
+    
+    track->SetTrackStatus(fStopAndKill);
+    fRunAction->IncrementKilledParticleCount();
+
+    G4cout << "Particle killed! (time)" << G4endl;
   }
 
   switch(fDataCollectionType)
