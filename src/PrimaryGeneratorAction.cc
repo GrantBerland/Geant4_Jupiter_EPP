@@ -201,6 +201,13 @@ void PrimaryGeneratorAction::GenerateElectrons(ParticleSample* r)
       
       inputFile.close();
       break;
+    case(3): // Power law with alpha = 2
+	r->energy = fE0 * std::pow(G4UniformRand(), -1/(2-1));
+      break;
+
+    case(4): // Power law with alpha = 3
+	r->energy = fE0 * std::pow(G4UniformRand(), -1/(3-1));
+      break;
     
     default:
      throw std::invalid_argument("Need to enter an energy distribution!");
