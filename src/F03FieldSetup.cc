@@ -84,8 +84,8 @@ F03FieldSetup::F03FieldSetup()
 
 
   // Default values
-  fMinStep     = 0.1*km ; 
-  fStepperType = 10;
+  fMinStep     = 10.*cm ; 
+  //fStepperType = 10;
 
   fFieldManager = GetGlobalFieldManager();
 

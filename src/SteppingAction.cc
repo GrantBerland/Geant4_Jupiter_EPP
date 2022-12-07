@@ -111,7 +111,8 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
 {
 
   G4Track* track = step->GetTrack();
-  
+
+  /*
   if( std::isnan(step->GetPostStepPoint()->GetKineticEnergy()) )
   {
     G4cout << "Particle killed at: " << step->GetPreStepPoint()->GetKineticEnergy()/keV << 
@@ -135,6 +136,8 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
 
     G4cout << "Particle killed! (time)" << G4endl;
   }
+
+  */
 
   switch(fDataCollectionType)
   {
@@ -351,7 +354,7 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
           
         
         // Check for valid altitude address
-        if(altitudeAddress >= 0 && altitudeAddress < 500 && track->GetNextVolume() != nullptr) 
+        if(altitudeAddress >= 0 && altitudeAddress < 600 && track->GetNextVolume() != nullptr) 
         {
           // Arguments:
           // altitude, energy lost, current energy before loss calculation, particle type
@@ -361,7 +364,7 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
         {
           // Arguments:
           // altitude, current energy, current energy, particle type
-          LogEnergyToSpecificHistogram(500, energyAfter, energyAfter, flag);
+          LogEnergyToSpecificHistogram(600, energyAfter, energyAfter, flag);
           track->SetTrackStatus(fStopAndKill);
         }
 

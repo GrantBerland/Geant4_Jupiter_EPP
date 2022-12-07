@@ -88,27 +88,29 @@ void PrimaryGeneratorAction::GenerateElectrons(ParticleSample* r)
   std::ifstream inputFile; 
   
   // Initial position RV's
-  G4double theta = G4UniformRand() * 2. * 3.1415926; // u ~ Unif[0, 2 pi)
-  G4double radialPosition = G4UniformRand();  // [0, 1)
+  //G4double theta = G4UniformRand() * 2. * 3.1415926; // u ~ Unif[0, 2 pi)
+  G4double theta = 0; // u ~ Unif[0, 2 pi)
+  //G4double radialPosition = G4UniformRand();  // [0, 1)
+  G4double radialPosition = 0;  // [0, 1)
   G4double diskRadius = 400.*km;
 
   // Random uniform sampling on a circular area
-  r->xPos = diskRadius * std::sqrt(radialPosition) * std::cos(theta);
-  r->yPos = diskRadius * std::sqrt(radialPosition) * std::sin(theta);
-  //r->xPos = 0;
-  //r->yPos = 0;
+  //r->xPos = diskRadius * std::sqrt(radialPosition) * std::cos(theta);
+  //r->yPos = diskRadius * std::sqrt(radialPosition) * std::sin(theta);
+  r->xPos = 0;
+  r->yPos = 0;
 
   // Subtraction due to coordinate axis location in middle of volume
   r->zPos = (fInitialParticleAlt - 500)*km;
 
   // Particle attribute RV's
   // Starts electrons with gyromotion about field line
-  G4double maxPitchAngle = fMaxPitchAngle * 3.1415926 / 180.;   // rad
+  G4double maxPitchAngle = fMaxPitchAngle * fPI / 180.;   // rad
   
   // Angular RV's
-  G4double gyroPhase  = G4UniformRand() * 2. * 3.1415926;
-  G4double pitchAngle = (G4UniformRand()*2.-1.) * maxPitchAngle 
-	                            * 3.1415926 / 180.; 
+  //G4double gyroPhase  = G4UniformRand() * 2. * fPI;
+  G4double gyroPhase  = 0;
+  G4double pitchAngle; 
 
   // Loss cone at 1000 km : 49.4 deg
   // Loss cone at 300 km  : 61.45 deg
@@ -167,7 +169,13 @@ void PrimaryGeneratorAction::GenerateElectrons(ParticleSample* r)
   // Initial momentum direction of particles
   r->xDir = std::sin(pitchAngle)*std::cos(gyroPhase);
   r->yDir = std::sin(pitchAngle)*std::sin(gyroPhase);
-  r->zDir = -std::cos(pitchAngle);
+  r->zDir = std::cos(pitchAngle);
+
+
+  G4double spinIt = fPI;
+  r->yDir = std::cos(spinIt) * r->yDir - std::sin(spinIt) * r->zDir;
+  r->zDir = std::sin(spinIt) * r->yDir + std::cos(spinIt) * r->zDir;
+
 
   // Energy distribution types
   // 0 - exponential with folding energy fE0
