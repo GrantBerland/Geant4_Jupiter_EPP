@@ -48,7 +48,7 @@ void SteppingActionMessenger::SetNewValue(G4UIcommand* command,
     fSteppingAction->SetDataCollection(std::stoi(newValue));
   }    	 
   if(command == fcmd2){
-    fSteppingAction->SetPhotonWindow(std::stod(newValue));
+    fSteppingAction->SetPhotonWindowAlt(std::stod(newValue));
   }    	 
   if(command == fcmd3){
     fSteppingAction->SetPhotonFilename(newValue);

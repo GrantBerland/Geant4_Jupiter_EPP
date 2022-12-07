@@ -94,7 +94,7 @@ int main(int argc,char** argv)
   // Construct the default run manager
 #ifdef G4MULTITHREADED
   G4MTRunManager* runManager = new G4MTRunManager;
-  runManager->SetNumberOfThreads(16);  // (Grant's computer)
+  runManager->SetNumberOfThreads(1);  // (Grant's computer)
 #else
   G4RunManager* runManager = new G4RunManager;
 #endif
@@ -118,12 +118,12 @@ int main(int argc,char** argv)
 
   // Fine grained control of thresholds for looping particles
   auto runAction= new RunAction();
-  runAction->SetWarningEnergy(   0.1 * keV );
+  runAction->SetWarningEnergy(   0. * keV );
               // Looping particles with E < ^ keV will be killed after 1 step
               //   with warning.
               // Looping particles with E > ^ keV will generate a warning.
-  runAction->SetImportantEnergy( 0.01 * keV );
-  runAction->SetNumberOfTrials( 100 );
+  runAction->SetImportantEnergy( 0.0 * keV );
+  runAction->SetNumberOfTrials( 300 );
               // Looping particles with E > 0.1 MeV will survive for up to
               //  30 'tracking' steps, and only be killed if they still loop.
   // Note: this mechanism overwrites the thresholds established by

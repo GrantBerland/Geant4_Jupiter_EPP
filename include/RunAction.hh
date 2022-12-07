@@ -88,9 +88,11 @@ class RunAction : public G4UserRunAction
     G4int    GetKilledParticleCount(){ return fRunActionPartCount; }
 
   public:
-    myHistogram*           fEnergyHist1;
-    myHistogram*           fEnergyHist2;
-  
+    myHistogram*           fEnergyHist_1;
+    myHistogram*           fEnergyHist2D_1;
+    myHistogram*           fEnergyHist_2;
+    myHistogram*           fEnergyHist2D_2; 
+
   private:
     RunActionMessenger*    fRunActionMessenger;
     G4String 		   fHistogramFileName;

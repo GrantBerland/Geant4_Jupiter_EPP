@@ -50,19 +50,31 @@
 
 #include <fstream>
 
+#include "G4AutoLock.hh"
+
+
+namespace{ G4Mutex aMutex=G4MUTEX_INITIALIZER; }
+
 RunAction::RunAction()
 : G4UserRunAction(),
   fRunActionMessenger(),
   fHistogramFileName()
 {
 
-  fWarningEnergy   =   1.0 * keV;  // Arbitrary 
-  fImportantEnergy =  10.0 * keV;  // Arbitrary 
-  fNumberOfTrials  =   15;  // Arbitrary
+  fWarningEnergy   =   0.0 * keV;  // Arbitrary 
+  fImportantEnergy =   0.0 * keV;  // Arbitrary 
+  fNumberOfTrials  =   300;  // Arbitrary
 
   fRunActionMessenger     = new RunActionMessenger(this); 
-  fEnergyHist1             = new myHistogram();
-  fEnergyHist2             = new myHistogram();
+
+
+  fEnergyHist_1               = new myHistogram(); // 1000 km in 1 km bins
+  fEnergyHist2D_1             = new myHistogram(std::log10(0.250), std::log10(10000), 101); 
+                                                        // [250 eV, 10 MeV] in 100 bins
+  fEnergyHist_2               = new myHistogram(); // 1000 km in 1 km bins
+  fEnergyHist2D_2             = new myHistogram(std::log10(0.250), std::log10(10000), 101); 
+                                                        // [250 eV, 10 MeV] in 100 bins
+
 
   fRunActionPartCount = 0;
 }
@@ -71,18 +83,19 @@ RunAction::RunAction()
 
 RunAction::~RunAction()
 {
-  delete fEnergyHist1;
-  delete fEnergyHist2;
+  delete fEnergyHist_1;
+  delete fEnergyHist2D_1;
+  delete fEnergyHist_2;
+  delete fEnergyHist2D_2;
   delete fRunActionMessenger;
+
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void RunAction::BeginOfRunAction(const G4Run*)
 {
-
   ChangeLooperParameters( G4Electron::Definition() );
-
 }
 
 void RunAction::ChangeLooperParameters(const G4ParticleDefinition* particleDef )
@@ -119,13 +132,29 @@ void RunAction::ChangeLooperParameters(const G4ParticleDefinition* particleDef )
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 void RunAction::EndOfRunAction(const G4Run*)
 {
-  
+  /*
   G4cout << "Writing results to histogram...";
   fEnergyHist1->WriteHistogramToFile(fHistogramFileName);
   fEnergyHist2->WriteHistogramToFile("eBrem_" + fHistogramFileName);
   G4cout << "complete!" << G4endl;
 
   G4cout << "Killed particle count: " << this->GetKilledParticleCount() << G4endl;
+  */
+  
+  G4AutoLock lock(&aMutex);
+  
+  //G4cout << "Writing results to histogram...";
+  fEnergyHist_1->WriteHistogramToFile("electron_dep_" + fHistogramFileName);
+  fEnergyHist2D_1->Write2DHistogram("electron_ene_"   + fHistogramFileName);
+  fEnergyHist_2->WriteHistogramToFile("photon_dep_"   + fHistogramFileName);   
+  fEnergyHist2D_2->Write2DHistogram("photon_ene_"     + fHistogramFileName);   
+  //G4cout << "complete!" << G4endl;
+
+
+  fEnergyHist_1->ClearHistogram();
+  fEnergyHist2D_1->ClearHistogram();
+  fEnergyHist_2->ClearHistogram();
+  fEnergyHist2D_2->ClearHistogram();
 
 }
 
